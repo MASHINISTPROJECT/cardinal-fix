@@ -11,14 +11,14 @@ import (
 // Exit codes follow sysexits(3) conventions where reasonable so scripts
 // can branch on the failure class instead of guessing from prose output.
 const (
-	ExitCodeOK             = 0
-	ExitCodeUserError      = 2 // EX_USAGE
-	ExitCodeDataError      = 65 // EX_DATAERR
-	ExitCodeNoInput        = 66 // EX_NOINPUT
-	ExitCodeSoftware       = 70 // EX_SOFTWARE
-	ExitCodeIOError        = 74 // EX_IOERR
-	ExitCodeConfigError    = 78 // EX_CONFIG
-	ExitCodePermission     = 77 // EX_NOPERM
+	ExitCodeOK          = 0
+	ExitCodeUserError   = 2  // EX_USAGE
+	ExitCodeDataError   = 65 // EX_DATAERR
+	ExitCodeNoInput     = 66 // EX_NOINPUT
+	ExitCodeSoftware    = 70 // EX_SOFTWARE
+	ExitCodeIOError     = 74 // EX_IOERR
+	ExitCodeConfigError = 78 // EX_CONFIG
+	ExitCodePermission  = 77 // EX_NOPERM
 )
 
 // dangerousCaps is the canonical blocklist of Linux capabilities that

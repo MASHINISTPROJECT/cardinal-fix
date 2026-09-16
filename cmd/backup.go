@@ -764,10 +764,6 @@ func backupRestore(args []string) {
 	}
 }
 
-func restoreContainerBackup(c *container.Container, archivePath string) error {
-	return restoreContainerBackupWithOptions(c, archivePath, false)
-}
-
 func restoreContainerBackupWithOptions(c *container.Container, archivePath string, rebind bool) error {
 	if err := verifyBackupChecksum(archivePath); err != nil {
 		return fmt.Errorf("verify backup checksum: %w", err)

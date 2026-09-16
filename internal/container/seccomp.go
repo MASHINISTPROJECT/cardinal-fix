@@ -17,11 +17,11 @@ import (
 type SeccompAction string
 
 const (
-	SeccompActionKill    SeccompAction = "SCMP_ACT_KILL"
-	SeccompActionTrap    SeccompAction = "SCMP_ACT_TRAP"
-	SeccompActionErrno   SeccompAction = "SCMP_ACT_ERRNO"
-	SeccompActionAllow   SeccompAction = "SCMP_ACT_ALLOW"
-	SeccompActionLog     SeccompAction = "SCMP_ACT_LOG"
+	SeccompActionKill  SeccompAction = "SCMP_ACT_KILL"
+	SeccompActionTrap  SeccompAction = "SCMP_ACT_TRAP"
+	SeccompActionErrno SeccompAction = "SCMP_ACT_ERRNO"
+	SeccompActionAllow SeccompAction = "SCMP_ACT_ALLOW"
+	SeccompActionLog   SeccompAction = "SCMP_ACT_LOG"
 )
 
 // SeccompArch represents a seccomp architecture.
@@ -43,8 +43,8 @@ type SeccompSyscall struct {
 
 // SeccompProfile represents a complete seccomp profile.
 type SeccompProfile struct {
-	DefaultAction SeccompAction `json:"defaultAction"`
-	Architectures []SeccompArch `json:"architectures,omitempty"`
+	DefaultAction SeccompAction    `json:"defaultAction"`
+	Architectures []SeccompArch    `json:"architectures,omitempty"`
 	Syscalls      []SeccompSyscall `json:"syscalls"`
 }
 
@@ -60,9 +60,9 @@ func DefaultSeccompProfile() *SeccompProfile {
 		"finit_module",
 
 		// Kernel manipulation
-		"reboot",           // System reboot
-		"kexec_load",       // Load new kernel
-		"kexec_file_load",  // Load new kernel (file-based)
+		"reboot",          // System reboot
+		"kexec_load",      // Load new kernel
+		"kexec_file_load", // Load new kernel (file-based)
 
 		// Mount — prevents filesystem manipulation outside container
 		"mount",
@@ -71,8 +71,8 @@ func DefaultSeccompProfile() *SeccompProfile {
 		"chroot",
 
 		// Process manipulation
-		"ptrace",           // Process tracing — can escape namespaces
-		"process_vm_readv", // Read another process's memory
+		"ptrace",            // Process tracing — can escape namespaces
+		"process_vm_readv",  // Read another process's memory
 		"process_vm_writev", // Write to another process's memory
 
 		// Key management — prevents kernel keyring manipulation
@@ -87,11 +87,11 @@ func DefaultSeccompProfile() *SeccompProfile {
 		"stime",
 
 		// System info manipulation
-		"syslog",           // Kernel log access
+		"syslog", // Kernel log access
 
 		// IO operations
-		"ioperm",           // Direct port I/O
-		"iopl",             // Direct port I/O (alternative)
+		"ioperm", // Direct port I/O
+		"iopl",   // Direct port I/O (alternative)
 
 		// NUMA
 		"mbind",
@@ -401,8 +401,6 @@ func SeccompSupported() bool {
 
 	return true // Assume supported on modern kernels
 }
-
-
 
 // WriteDefaultSeccompProfile writes the default seccomp profile to a file.
 func WriteDefaultSeccompProfile(path string) error {

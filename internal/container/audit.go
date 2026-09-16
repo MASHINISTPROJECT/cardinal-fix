@@ -37,28 +37,28 @@ const (
 
 // AuditEvent represents a single audit log entry.
 type AuditEvent struct {
-	Timestamp   time.Time       `json:"timestamp"`
-	EventType   AuditEventType  `json:"event_type"`
-	ContainerID string          `json:"container_id,omitempty"`
-	ContainerName string        `json:"container_name,omitempty"`
-	User        string          `json:"user,omitempty"`
-	RemoteAddr  string          `json:"remote_addr,omitempty"`
-	Details     json.RawMessage `json:"details,omitempty"`
-	Success     bool            `json:"success"`
-	Error       string          `json:"error,omitempty"`
+	Timestamp     time.Time       `json:"timestamp"`
+	EventType     AuditEventType  `json:"event_type"`
+	ContainerID   string          `json:"container_id,omitempty"`
+	ContainerName string          `json:"container_name,omitempty"`
+	User          string          `json:"user,omitempty"`
+	RemoteAddr    string          `json:"remote_addr,omitempty"`
+	Details       json.RawMessage `json:"details,omitempty"`
+	Success       bool            `json:"success"`
+	Error         string          `json:"error,omitempty"`
 }
 
 // AuditDetails contains additional details for specific event types.
 type AuditDetails struct {
-	Command    []string          `json:"command,omitempty"`
-	Image      string            `json:"image,omitempty"`
-	Ports      []PortMap         `json:"ports,omitempty"`
-	Volumes    []VolumeMount     `json:"volumes,omitempty"`
-	Restart    string            `json:"restart,omitempty"`
-	ExitCode   int               `json:"exit_code,omitempty"`
-	Duration   time.Duration     `json:"duration,omitempty"`
-	Labels     map[string]string `json:"labels,omitempty"`
-	Network    string            `json:"network,omitempty"`
+	Command  []string          `json:"command,omitempty"`
+	Image    string            `json:"image,omitempty"`
+	Ports    []PortMap         `json:"ports,omitempty"`
+	Volumes  []VolumeMount     `json:"volumes,omitempty"`
+	Restart  string            `json:"restart,omitempty"`
+	ExitCode int               `json:"exit_code,omitempty"`
+	Duration time.Duration     `json:"duration,omitempty"`
+	Labels   map[string]string `json:"labels,omitempty"`
+	Network  string            `json:"network,omitempty"`
 }
 
 // AuditLogger provides audit logging for container operations.
@@ -157,11 +157,11 @@ func LogAPIRequest(method, path, remoteAddr string, success bool, err error) {
 	}
 
 	event := AuditEvent{
-		Timestamp:   time.Now(),
-		EventType:   AuditEventAPIRequest,
-		RemoteAddr:  remoteAddr,
-		Details:     mustMarshal(details),
-		Success:     success,
+		Timestamp:  time.Now(),
+		EventType:  AuditEventAPIRequest,
+		RemoteAddr: remoteAddr,
+		Details:    mustMarshal(details),
+		Success:    success,
 	}
 
 	if err != nil {

@@ -72,8 +72,8 @@ func TestCmdSmoke_RootHelpSplash(t *testing.T) {
 	out := stream.String()
 
 	expect := []string{
-		"cardinal",            // root command
-		"Lightweight",    // tagline word
+		"cardinal",    // root command
+		"Lightweight", // tagline word
 		"Available Commands",
 	}
 	for _, want := range expect {

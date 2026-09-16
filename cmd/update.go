@@ -430,8 +430,9 @@ func compareVersions(a, b string) int {
 // verifyCosignSignature performs an out-of-band cosign verification.
 //
 // The release workflow publishes:
-//   <binary>.sha256         — `sha256sum`-formatted digest (already verified above)
-//   <binary>.sha256.sig     — cosign signature over the .sha256 file
+//
+//	<binary>.sha256         — `sha256sum`-formatted digest (already verified above)
+//	<binary>.sha256.sig     — cosign signature over the .sha256 file
 //
 // We re-fetch the .sha256 file (so cosign verifies the same content the
 // client will rely on) and delegate verification to cosign. Cosign 1.x+

@@ -22,9 +22,9 @@ var (
 		"/.ssh", "/.aws", "/.kube", "/.docker", "/.gnupg", "/.netrc",
 	}
 
-	protectedMu       sync.RWMutex
-	allowedHostPaths  []string // overrides added by the user at runtime.
-	hostPolicyInited  bool
+	protectedMu      sync.RWMutex
+	allowedHostPaths []string // overrides added by the user at runtime.
+	hostPolicyInited bool
 )
 
 // IsProtectedHostPath reports whether the absolute, symlink-resolved path

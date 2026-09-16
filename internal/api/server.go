@@ -233,8 +233,8 @@ type rateBucket struct {
 
 func rateLimiter(next http.Handler) http.Handler {
 	const (
-		rate      = 25.0 // tokens per second
-		bucket    = 50   // initial burst
+		rate       = 25.0 // tokens per second
+		bucket     = 50   // initial burst
 		maxClients = 4096 // hard cap on tracked IPs
 	)
 	var (
@@ -320,10 +320,6 @@ func writeJSON(w http.ResponseWriter, status int, v interface{}) {
 
 func writeError(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, ErrorResponse{Message: msg})
-}
-
-func writeOK(w http.ResponseWriter, msg string) {
-	writeJSON(w, 200, OKResponse{Message: msg})
 }
 
 func handlePing(w http.ResponseWriter, r *http.Request) {

@@ -37,9 +37,8 @@ func System(args []string) {
 
 func systemDF() {
 	type category struct {
-		name  string
-		path  string
-		count int
+		name string
+		path string
 	}
 	root := state.DataDir()
 	categories := []category{

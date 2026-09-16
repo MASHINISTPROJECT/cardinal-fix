@@ -23,10 +23,6 @@ func namespaceInode(pid int, namespace string) (uint64, error) {
 	return stat.Ino, nil
 }
 
-func mountNamespaceInode(pid int) (uint64, error) {
-	return namespaceInode(pid, "mnt")
-}
-
 func containerNamespaceIdentities(pid int) (mount, pidNS, network, ipc, uts uint64, err error) {
 	mount, err = namespaceInode(pid, "mnt")
 	if err != nil {

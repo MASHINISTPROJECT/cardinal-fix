@@ -79,28 +79,6 @@ func prctl(option uintptr, arg2, arg3, arg4, arg5 uintptr) error {
 	return nil
 }
 
-func dropCapability(capName string) error {
-	upper := strings.ToUpper(capName)
-	if !strings.HasPrefix(upper, "CAP_") {
-		upper = "CAP_" + upper
-	}
-	capName = strings.TrimPrefix(upper, "CAP_")
-	capVal, ok := capMap[capName]
-	if !ok {
-		return fmt.Errorf("unknown capability: %s", capName)
-	}
-	return prctl(PR_CAPBSET_DROP, capVal, 0, 0, 0)
-}
-
-func dropAllCapabilities() error {
-	for _, capVal := range capMap {
-		if err := prctl(PR_CAPBSET_DROP, capVal, 0, 0, 0); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func setNoNewPrivileges() error {
 	return prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)
 }

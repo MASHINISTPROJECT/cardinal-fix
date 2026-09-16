@@ -994,11 +994,6 @@ func createLayerFromDir(srcDir, outputPath string) error {
 	return nil
 }
 
-func hashFile(path string) (string, int) {
-	h, size := overlayutil.HashFile(path)
-	return h, int(size)
-}
-
 func extractLayer(cachePath, rootfsDir string) error {
 	return overlayutil.ExtractLayer(cachePath, rootfsDir)
 }

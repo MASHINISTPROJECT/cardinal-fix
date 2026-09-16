@@ -70,12 +70,6 @@ func (c *Container) allowAutomaticRestart(now time.Time) bool {
 	return true
 }
 
-func (c *Container) restartBlocked() bool {
-	c.dataMu.RLock()
-	defer c.dataMu.RUnlock()
-	return c.RestartBlocked
-}
-
 // AllowAutomaticRestart records one automatic restart attempt against the
 // container's crash-loop budget and reports whether another restart is allowed.
 // It is used by the supervisor when it schedules restarts for detached

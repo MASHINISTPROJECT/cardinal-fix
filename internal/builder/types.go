@@ -17,24 +17,24 @@ func (s *StringSlice) Set(v string) error {
 type InstructionType string
 
 const (
-	From       InstructionType = "FROM"
-	Run        InstructionType = "RUN"
-	Cmd        InstructionType = "CMD"
-	Entrypoint InstructionType = "ENTRYPOINT"
-	Env        InstructionType = "ENV"
-	Workdir    InstructionType = "WORKDIR"
-	Copy       InstructionType = "COPY"
-	Add        InstructionType = "ADD"
-	Expose     InstructionType = "EXPOSE"
-	Label      InstructionType = "LABEL"
-	User       InstructionType = "USER"
-	Volume     InstructionType = "VOLUME"
-	Shell      InstructionType = "SHELL"
-	Arg        InstructionType = "ARG"
-	StopSignal InstructionType = "STOPSIGNAL"
+	From        InstructionType = "FROM"
+	Run         InstructionType = "RUN"
+	Cmd         InstructionType = "CMD"
+	Entrypoint  InstructionType = "ENTRYPOINT"
+	Env         InstructionType = "ENV"
+	Workdir     InstructionType = "WORKDIR"
+	Copy        InstructionType = "COPY"
+	Add         InstructionType = "ADD"
+	Expose      InstructionType = "EXPOSE"
+	Label       InstructionType = "LABEL"
+	User        InstructionType = "USER"
+	Volume      InstructionType = "VOLUME"
+	Shell       InstructionType = "SHELL"
+	Arg         InstructionType = "ARG"
+	StopSignal  InstructionType = "STOPSIGNAL"
 	Healthcheck InstructionType = "HEALTHCHECK"
-	Maintainer InstructionType = "MAINTAINER"
-	OnBuild    InstructionType = "ONBUILD"
+	Maintainer  InstructionType = "MAINTAINER"
+	OnBuild     InstructionType = "ONBUILD"
 )
 
 type Instruction struct {
@@ -54,5 +54,3 @@ type BuildConfig struct {
 	CPUCount    float64
 	MemoryLimit int64
 }
-
-

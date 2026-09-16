@@ -247,7 +247,6 @@ func parseJSONArray(s string) []string {
 	return parts
 }
 
-
 // parseEnvArgs handles "ENV KEY=VAL KEY2=VAL2" and "ENV KEY VAL" formats
 func parseEnvArgs(s string) []string {
 	if strings.Contains(s, "=") {

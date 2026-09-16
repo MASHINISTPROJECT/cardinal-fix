@@ -27,9 +27,9 @@ var levelNames = map[Level]string{
 }
 
 type Logger struct {
-	mu      sync.Mutex
-	out     io.Writer
-	err     io.Writer
+	mu       sync.Mutex
+	out      io.Writer
+	err      io.Writer
 	minLevel Level
 	jsonMode bool
 }

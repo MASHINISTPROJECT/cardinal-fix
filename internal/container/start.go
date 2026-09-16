@@ -564,17 +564,6 @@ func (c *Container) runForeground(cmd *exec.Cmd) error {
 	return err
 }
 
-type ignoreErrWriter struct{ w io.Writer }
-
-func (w *ignoreErrWriter) Write(p []byte) (int, error) {
-	n, _ := w.w.Write(p)
-	return n, nil
-}
-
-func newIgnoreErrWriter(w io.Writer) *ignoreErrWriter {
-	return &ignoreErrWriter{w: w}
-}
-
 func (c *Container) NeedsNetwork() bool {
 	return c.NetworkMode != "none" && c.NetworkMode != "host"
 }

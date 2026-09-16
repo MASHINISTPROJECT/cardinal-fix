@@ -333,5 +333,3 @@ func SecureDelete(path string) error {
 	_ = f.Close()
 	return os.Remove(path)
 }
-
-

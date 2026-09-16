@@ -119,22 +119,6 @@ type composeConfigSpec struct {
 	Name     string `yaml:"name"`
 }
 
-type composeSecretRef struct {
-	Source string `yaml:"source"`
-	Target string `yaml:"target,omitempty"`
-	UID    string `yaml:"uid,omitempty"`
-	GID    string `yaml:"gid,omitempty"`
-	Mode   uint32 `yaml:"mode,omitempty"`
-}
-
-type composeConfigRef struct {
-	Source string `yaml:"source"`
-	Target string `yaml:"target,omitempty"`
-	UID    string `yaml:"uid,omitempty"`
-	GID    string `yaml:"gid,omitempty"`
-	Mode   uint32 `yaml:"mode,omitempty"`
-}
-
 type composeVolume struct {
 	Driver     string            `yaml:"driver"`
 	DriverOpts map[string]string `yaml:"driver_opts"`
@@ -155,13 +139,6 @@ type composeHealthcheck struct {
 type composeUlimit struct {
 	Soft int `yaml:"soft"`
 	Hard int `yaml:"hard"`
-}
-
-type composeVolumeMount struct {
-	Type     string `yaml:"type"`
-	Source   string `yaml:"source"`
-	Target   string `yaml:"target"`
-	ReadOnly bool   `yaml:"read_only"`
 }
 
 // LoadCompose loads a docker-compose.yaml file and returns a Config.

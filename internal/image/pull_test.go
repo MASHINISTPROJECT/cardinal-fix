@@ -22,10 +22,10 @@ func TestParseBearerChallenge(t *testing.T) {
 // be rebuilt for the actual repository.
 func TestPullScope(t *testing.T) {
 	cases := []struct {
-		name     string
+		name      string
 		challenge string
-		repo     string
-		want     string
+		repo      string
+		want      string
 	}{
 		{
 			name:      "ghcr placeholder scope is replaced",

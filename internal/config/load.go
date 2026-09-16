@@ -17,5 +17,3 @@ func loadFile(path string) (*Config, error) {
 	}
 	return &cfg, nil
 }
-
-

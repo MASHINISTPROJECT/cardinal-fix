@@ -85,11 +85,11 @@ func TestAllowlist_InsecureRegistryDefaultDenied(t *testing.T) {
 
 func TestNormalizeRegistryHostname(t *testing.T) {
 	cases := map[string]string{
-		"https://docker.io":            "docker.io",
-		"http://localhost:5000":        "localhost:5000",
-		"ghcr.io/v2/":                  "ghcr.io",
-		"docker.io":                    "docker.io",
-		"":                             "",
+		"https://docker.io":     "docker.io",
+		"http://localhost:5000": "localhost:5000",
+		"ghcr.io/v2/":           "ghcr.io",
+		"docker.io":             "docker.io",
+		"":                      "",
 	}
 	for in, want := range cases {
 		if got := normalizeRegistryHostname(in); got != want {

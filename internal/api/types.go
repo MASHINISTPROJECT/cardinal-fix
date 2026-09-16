@@ -308,18 +308,3 @@ func newTimestamp(t time.Time) int64 {
 	}
 	return t.Unix()
 }
-
-func containerStatus(c *ContainerState) string {
-	switch {
-	case c.Running:
-		return "running"
-	case c.Paused:
-		return "paused"
-	case c.Restarting:
-		return "restarting"
-	case c.Dead:
-		return "dead"
-	default:
-		return "exited"
-	}
-}

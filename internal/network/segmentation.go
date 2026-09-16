@@ -36,8 +36,8 @@ func DefaultIsolationPolicy() *NetworkPolicy {
 			{Protocol: "tcp", Port: 443, Action: "allow"},
 		},
 		Egress: []NetworkRule{
-			{Protocol: "tcp", Action: "allow"},  // Allow all outbound TCP
-			{Protocol: "udp", Action: "allow"},  // Allow all outbound UDP
+			{Protocol: "tcp", Action: "allow"}, // Allow all outbound TCP
+			{Protocol: "udp", Action: "allow"}, // Allow all outbound UDP
 		},
 	}
 }

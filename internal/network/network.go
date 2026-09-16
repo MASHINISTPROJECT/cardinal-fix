@@ -153,10 +153,6 @@ func ReleaseIP(ip string) {
 	savePool(p)
 }
 
-func flushBridgeNeigh(ip string) {
-	flushBridgeNeighOnBridge(BridgeName, ip)
-}
-
 func removeOrphanVeths() {
 	out, err := exec.Command("ip", "-o", "link", "show", "master", BridgeName).Output()
 	if err != nil {

@@ -524,12 +524,11 @@ func handleContainersRouter(w http.ResponseWriter, r *http.Request) {
 	c, err := container.Load(id)
 	if err != nil {
 		// Fallback: scan the containers directory and try prefix + name match
-		allContainers, listErr := container.List(true)
-		if listErr == nil {
+		c = nil
+		if allContainers, listErr := container.List(true); listErr == nil {
 			for _, candidate := range allContainers {
 				if candidate.ID == id || strings.HasPrefix(candidate.ID, id) || candidate.Name == id {
 					c = candidate
-					err = nil
 					break
 				}
 			}

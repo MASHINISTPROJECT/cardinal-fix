@@ -22,8 +22,8 @@ type ManifestV2 struct {
 }
 
 type ManifestList struct {
-	SchemaVersion int                `json:"schemaVersion"`
-	MediaType     string             `json:"mediaType"`
+	SchemaVersion int                 `json:"schemaVersion"`
+	MediaType     string              `json:"mediaType"`
 	Manifests     []ManifestListEntry `json:"manifests"`
 }
 
