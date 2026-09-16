@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.31`
-**Project release:** `v2.0.31`
+**Documentation version:** `2.0.32`
+**Project release:** `v2.0.32`
 <!-- cardinal-version:end -->
 
 # cardinal — Continuous audit
@@ -10,8 +10,9 @@ every check enforces.
 
 ## `scripts/audit.sh`
 
-A static analyser that runs on local developer machines (via `make audit`)
-and on every push / pull request (`.github/workflows/audit.yml`). It exits
+A static analyser that runs on local developer machines (via `make audit`),
+in CI (`build.yml` lint job runs `bash scripts/audit.sh`) and daily via
+`.github/workflows/scheduled.yml`. It exits
 with:
 
 * `0` — no failures (warnings allowed);
@@ -56,13 +57,13 @@ The full output is reproduced in the CI workflow logs; abbreviated:
   PASS  install.ps1 has errexit
   PASS  install-appimage.sh has errexit
   PASS  scripts/install-apt.sh verifies SHA256
-  PASS  release artifacts are signed
-  WARN  no SBOM generation step
-  PASS  reproducible-build flags present
-== 3. Tests ==
-  WARN  no fuzz tests
-  PASS  race detector enabled in CI
-  PASS  fresh coverage profile exists
+   PASS  release artifacts are signed
+   PASS  SBOM generation step present (anchore/sbom-action)
+   PASS  reproducible-build flags present
+ == 3. Tests ==
+   PASS  fuzz tests present (internal/builder)
+   PASS  race detector enabled in CI
+   PASS  fresh coverage profile exists
 == 4. API security ==
   PASS  constant-time token compare
   PASS  request body size limit
@@ -122,8 +123,9 @@ rationale and the recommended replacement stack are documented in
 
 ## Continuous process
 
-* Audit triggers on every PR (`make audit-strict`).
-* Daily `govulncheck` via `.github/workflows/scheduled-vuln-scan.yml`.
+* Audit triggers: `build.yml` lint job on push/PR (`bash scripts/audit.sh`,
+  non-strict), `make audit-strict` locally for WARN-level gates.
+* Daily `govulncheck` + `scripts/audit.sh` via `.github/workflows/scheduled.yml`.
 * Dependabot weekly (`/.github/dependabot.yml`).
 * Secret scan weekly (`gitleaks/gitleaks-action@v2` with the
-  `/gitleaks.toml` allowlist for documented placeholders).
+  `.gitleaks.toml` allowlist for documented placeholders).

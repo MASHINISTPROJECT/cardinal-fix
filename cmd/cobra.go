@@ -188,87 +188,13 @@ MODIFY RUNNING CONTAINER
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   cardinal set <container> [flags]   Modify parameters (see below)
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-cardinal run — FULL FLAG REFERENCE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-RESOURCE LIMITS:
-  --ram, --memory string     Memory limit (e.g. 512m, 8g)
-  --cpu, --cpus float        CPU limit (e.g. 0.5, 2)
-  --disk string              Disk limit (e.g. 1G, 512M)
-
-NETWORKING:
-  -p, --ports string         Port mapping (host:container[/protocol])
-  --network string           Network mode (bridge/host/none/name)
-  --dns stringSlice          DNS server (repeatable)
-
-STORAGE:
-  -v, --volume, --vol string Volume mount (src:dst[:ro|rw], repeatable)
-
-ENVIRONMENT:
-  -e string                  Env var key=val (repeatable)
-  --env-file string          Path to .env file
-
-IDENTITY & SECURITY:
-  -n string                  Container name
-  -h string                  Hostname
-  --user string              UID:GID or username
-  --cap-add stringSlice      Add capabilities (e.g. NET_ADMIN)
-  --cap-drop stringSlice     Drop capabilities (e.g. ALL)
-  --readonly                 Read-only rootfs
-  --no-new-privs             Block privilege escalation
-  --isolated                 Isolate from other containers
-  --seccomp-profile string   Seccomp profile path
-  --apparmor-profile string  AppArmor profile name
-
-LIFECYCLE:
-  -d                         Detach (background)
-  --rm                       Remove on exit
-  --restart string           Policy (always|on-failure|unless-stopped)
-  --restart-delay string     Delay before restart (e.g. 10s)
-  --restart-max-attempts int Max restarts in window
-  --restart-window string    Crash-loop window (e.g. 10m)
-
-EXECUTION:
-  -it                        Interactive TTY
-  --entrypoint string        Override entrypoint
-  --workdir string           Working directory
-  --cmd, --command string    Command override
-  --image string             Container image (alternative to positional)
-  --label, -l string         Label key=val (repeatable)
-  --sysctl string            Sysctl key=val (repeatable)
-  --ulimit string            Ulimit name=soft:hard (repeatable)
-
-HEALTH & STARTUP:
-  --healthcheck-cmd string   Health check command
-  --healthcheck-interval int Interval (seconds)
-  --healthcheck-retries int  Retries
-  --healthcheck-timeout int  Timeout (seconds)
-  --startup string           Startup script or @filepath
-
-SAFETY:
-  --allow-dangerous-caps     Acknowledge unsafe caps (SYS_ADMIN etc)
-  --allow-root               Acknowledge running as UID 0
-  --audit-log                Enable audit logging
-  --encrypted-backup         Encrypt backup archives
+` + runLongHelp + `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-cardinal set — MODIFY RUNNING CONTAINER
+cardinal set — FLAG REFERENCE (see "cardinal set --help")
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  --ram, --memory string   Memory limit (e.g. 512m, 8g)
-  --cpu, --cpus float      CPU limit (e.g. 1.5)
-  --disk string            Disk limit (e.g. 1G)
-  --restart string         Restart policy (no|always|on-failure|unless-stopped)
-  --restart-delay string   Delay before restart
-  -e string                Env var key=val (repeatable)
-  --workdir string         Working directory
-  --entrypoint string      Override entrypoint
-  --user string            UID:GID or username
-  --readonly               Read-only rootfs
-  --no-new-privs           Block privilege escalation
-  -h string                Hostname
-  --network string         Network mode (bridge/none/host)
+` + setLongHelp + `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EXAMPLES

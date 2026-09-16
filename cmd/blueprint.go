@@ -384,7 +384,12 @@ func blueprintInstall(args []string) {
 		case "--cpus":
 			if i+1 < len(args) {
 				i++
-				cpusOverride, _ = strconv.ParseFloat(args[i], 64)
+				v, err := strconv.ParseFloat(args[i], 64)
+				if err != nil || v < 0 {
+					fmt.Fprintf(os.Stderr, "Error: invalid --cpus value: %s\n", args[i])
+					exitFunc(1)
+				}
+				cpusOverride = v
 			}
 		case "-e", "--env":
 			if i+1 < len(args) {
@@ -650,13 +655,23 @@ func blueprintInstall(args []string) {
 		memStr = tpl.Memory
 	}
 	if memStr != "" {
-		memoryLimit, _ = container.ParseMemoryString(memStr)
+		v, err := container.ParseMemoryString(memStr)
+		if err != nil || v == 0 {
+			fmt.Fprintf(os.Stderr, "Error: invalid memory value: %s\n", memStr)
+			exitFunc(1)
+		}
+		memoryLimit = v
 	}
 
 	// CPUs
 	cpus := cpusOverride
 	if cpus == 0 && tpl.CPUs != "" {
-		cpus, _ = strconv.ParseFloat(tpl.CPUs, 64)
+		v, err := strconv.ParseFloat(tpl.CPUs, 64)
+		if err != nil || v < 0 {
+			fmt.Fprintf(os.Stderr, "Error: invalid CPUs value in blueprint: %s\n", tpl.CPUs)
+			exitFunc(1)
+		}
+		cpus = v
 	}
 
 	// Network mode

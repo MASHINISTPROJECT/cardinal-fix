@@ -388,5 +388,3 @@ func clusterServe(args []string) {
 		exitFunc(1)
 	}
 }
-
-var _ = time.Now

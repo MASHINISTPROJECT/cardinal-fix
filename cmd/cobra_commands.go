@@ -129,20 +129,9 @@ func register(spec commandSpec) *cobra.Command {
 	return cmd
 }
 
-func init() {
-	// Image operations
-	register(commandSpec{"pull", "Pull an image from a registry", Pull, ""})
-	register(commandSpec{"push", "Push an image to a registry", Push, ""})
-	register(commandSpec{"images", "List local images", Images, ""})
-	register(commandSpec{"verify", "Verify an image manifest and layer digests", Verify, ""})
-	register(commandSpec{"search", "Search images on Docker Hub", Search, ""})
-	register(commandSpec{"rmi", "Remove an image", Rmi, ""})
-	register(commandSpec{"commit", "Create an image from a container", Commit, ""})
-	register(commandSpec{"build", "Build an image from a Dockerfile", Build, ""})
-	register(commandSpec{"export", "Export an image to a tar.gz archive", Export, ""})
-
-	// Container operations
-	register(commandSpec{"run", "Create and run a container", Run, `Usage: cardinal run [opts] <image> [cmd...]
+// runLongHelp is the single source of truth for the `run` flag reference.
+// It is reused by the root help text in cobra.go so both stay in sync.
+const runLongHelp = `Usage: cardinal run [opts] <image> [cmd...]
 
 Resource limits:
   --ram, --memory string     Memory limit (e.g. 512m, 8g)
@@ -207,13 +196,11 @@ Safety:
 Examples:
   cardinal run -d --ram 8g --cpu 2 -p 8080:80 --name web nginx
   cardinal run -it --rm alpine sh
-  cardinal run -d -v /data:/app -e DB_HOST=localhost myapp:latest`})
-	register(commandSpec{"start", "Start a stopped container", StartCmd, ""})
-	register(commandSpec{"stop", "Stop a running container", Stop, ""})
-	register(commandSpec{"restart", "Restart a container", Restart, ""})
-	register(commandSpec{"rm", "Remove a container", Rm, ""})
-	register(commandSpec{"rename", "Rename a container", Rename, ""})
-	register(commandSpec{"set", "Modify container parameters", Set, `Usage: cardinal set <container> [flags]
+  cardinal run -d -v /data:/app -e DB_HOST=localhost myapp:latest`
+
+// setLongHelp is the single source of truth for the `set` flag reference.
+// It is reused by the root help text in cobra.go so both stay in sync.
+const setLongHelp = `Usage: cardinal set <container> [flags]
 
 Flags:
   --ram, --memory string   Memory limit (e.g. 512m, 8g)
@@ -229,11 +216,32 @@ Flags:
   --no-new-privs           Block privilege escalation
   -h string                Hostname
   --network string         Network mode (bridge/none/host)
-  --startup string          Startup script or @filepath
+  --startup string         Startup script or @filepath
 
 Example:
   cardinal set myweb --ram 4g --cpu 2 --restart always
-  cardinal set myweb --startup @/opt/my-startup.sh`})
+  cardinal set myweb --startup @/opt/my-startup.sh`
+
+func init() {
+	// Image operations
+	register(commandSpec{"pull", "Pull an image from a registry", Pull, ""})
+	register(commandSpec{"push", "Push an image to a registry", Push, ""})
+	register(commandSpec{"images", "List local images", Images, ""})
+	register(commandSpec{"verify", "Verify an image manifest and layer digests", Verify, ""})
+	register(commandSpec{"search", "Search images on Docker Hub", Search, ""})
+	register(commandSpec{"rmi", "Remove an image", Rmi, ""})
+	register(commandSpec{"commit", "Create an image from a container", Commit, ""})
+	register(commandSpec{"build", "Build an image from a Dockerfile", Build, ""})
+	register(commandSpec{"export", "Export an image to a tar.gz archive", Export, ""})
+
+	// Container operations
+	register(commandSpec{"run", "Create and run a container", Run, runLongHelp})
+	register(commandSpec{"start", "Start a stopped container", StartCmd, ""})
+	register(commandSpec{"stop", "Stop a running container", Stop, ""})
+	register(commandSpec{"restart", "Restart a container", Restart, ""})
+	register(commandSpec{"rm", "Remove a container", Rm, ""})
+	register(commandSpec{"rename", "Rename a container", Rename, ""})
+	register(commandSpec{"set", "Modify container parameters", Set, setLongHelp})
 	psCmd := register(commandSpec{"ps", "List containers", Ps, ""})
 	psCmd.Flags().BoolP("all", "a", false, "Show all containers (running + stopped)")
 	psCmd.Run = func(c *cobra.Command, args []string) {
@@ -241,7 +249,9 @@ Example:
 			_ = c.Help()
 			return
 		}
-		psShowAll, _ = c.Flags().GetBool("all")
+		if v, err := c.Flags().GetBool("all"); err == nil {
+			psShowAll = v
+		}
 		Ps(args)
 	}
 	register(commandSpec{"inspect", "Inspect a container (JSON)", Inspect, ""})

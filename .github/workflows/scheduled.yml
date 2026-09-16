@@ -49,4 +49,9 @@ jobs:
 
   audit:
     name: scripts/audit.sh (regressions)
-    uses: ./.github/workflows/reusable-audit.yml
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: scripts/audit.sh
+        run: bash scripts/audit.sh

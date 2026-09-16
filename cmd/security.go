@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-
-	"cardinal/internal/container"
 )
 
 // Exit codes follow sysexits(3) conventions where reasonable so scripts
@@ -104,8 +102,3 @@ func isRootUser(u string) bool {
 	}
 	return false
 }
-
-// Sanity check that no audit event references the legacy "container.New"
-// path without going through this validator. This is enforced by an
-// explicit test on the helper below.
-var _ = container.New // import-only: ensures container package is linked.

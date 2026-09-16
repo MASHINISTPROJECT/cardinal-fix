@@ -20,3 +20,5 @@ artifacts/
 .vscode/
 .idea/
 *.swp
+*.log
+*.tmp

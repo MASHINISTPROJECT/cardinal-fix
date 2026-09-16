@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.31`
-**Project release:** `v2.0.31`
+**Documentation version:** `2.0.32`
+**Project release:** `v2.0.32`
 <!-- cardinal-version:end -->
 
 <p align="center">
@@ -99,8 +99,8 @@ vendor-specific "FTP passthrough" features in their cluster stack.
    ticket; the operation is recorded in the audit log.
 10. **Updating**: prefer `cardinal update` together with `CARDINAL_REQUIRE_SIGNATURE=1`
     on production hosts so cosign verification is enforced.
-11. **Secrets**: prefer `--secret` mounts (`cardinal secret`) or an external
-    secret manager; do not commit `.env` files or API tokens.
+11. **Secrets**: prefer compose `secrets:` file mounts (`/run/secrets/<name>`)
+     or an external secret manager; do not commit `.env` files or API tokens.
 12. **Disaster recovery**: test restoration on a separate stopped container
     at least once per quarter; rotate the encryption key alongside node
     upgrades.

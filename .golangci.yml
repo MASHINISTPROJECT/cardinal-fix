@@ -5,8 +5,12 @@ linters:
     - unused
     - errcheck
     - govet
-  disable:
     - ineffassign
+    - gofmt
+    - goimports
+    - misspell
+    - godox
+  disable:
     - typecheck
 
 linters-settings:
@@ -17,13 +21,14 @@ linters-settings:
       - os.Remove
       - os.MkdirAll
       - os.Setenv
+  godox:
+    keywords:
+      - BUG
+      - FIXME
+      - TODO
 
 issues:
   exclude-use-default: false
-  exclude:
-    - "func.*is unused"
-    - "type.*is unused"
-    - "field.*is unused"
   exclude-rules:
     - path: _test\.go
       linters:

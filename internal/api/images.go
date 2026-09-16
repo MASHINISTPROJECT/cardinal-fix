@@ -3,10 +3,13 @@
 package api
 
 import (
+	"archive/tar"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -261,7 +264,59 @@ func handleImageGet(w http.ResponseWriter, r *http.Request, ref string) {
 		writeError(w, 405, "method not allowed")
 		return
 	}
-	writeError(w, 501, "not implemented")
+	name, tag := parseImageRef(ref)
+	img := image.LoadFromStore(name, tag)
+	if img == nil {
+		writeError(w, 404, fmt.Sprintf("image %s:%s not found", name, tag))
+		return
+	}
+	imageDir := state.ImageDir(name, tag)
+	info, err := os.Stat(imageDir)
+	if err != nil || !info.IsDir() {
+		writeError(w, 404, fmt.Sprintf("image %s:%s not found", name, tag))
+		return
+	}
+	w.Header().Set("Content-Type", "application/x-tar")
+	w.WriteHeader(200)
+	tw := tar.NewWriter(w)
+	defer func() { _ = tw.Close() }()
+	_ = filepath.Walk(imageDir, func(path string, fi os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+		rel, err := filepath.Rel(imageDir, path)
+		if err != nil || rel == "." {
+			return nil
+		}
+		rel = filepath.ToSlash(rel)
+		header, err := tar.FileInfoHeader(fi, "")
+		if err != nil {
+			return nil
+		}
+		header.Name = rel
+		if fi.Mode()&os.ModeSymlink != 0 {
+			link, readErr := os.Readlink(path)
+			if readErr != nil {
+				return nil
+			}
+			header.Linkname = filepath.ToSlash(link)
+		}
+		if err := tw.WriteHeader(header); err != nil {
+			return err
+		}
+		if fi.Mode().IsRegular() {
+			in, openErr := os.Open(path)
+			if openErr != nil {
+				return nil
+			}
+			_, copyErr := io.Copy(tw, in)
+			_ = in.Close()
+			if copyErr != nil {
+				return copyErr
+			}
+		}
+		return nil
+	})
 }
 
 func handleImagePull(w http.ResponseWriter, r *http.Request, ref string) {

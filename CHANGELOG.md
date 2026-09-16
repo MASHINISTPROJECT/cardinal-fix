@@ -1,7 +1,19 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.31`
-**Project release:** `v2.0.31`
+**Documentation version:** `2.0.32`
+**Project release:** `v2.0.32`
 <!-- cardinal-version:end -->
+
+## 2.0.32 (2026-09-16)
+
+### CI, API, docs, and CLI hygiene fixes
+
+- Fix `scheduled.yml` daily audit job: it referenced the deleted `reusable-audit.yml`; now runs `checkout` + `bash scripts/audit.sh` directly.
+- Fix `go.mod`: promote `creack/pty` from indirect to direct dependency (matches `vendor/modules.txt`); `go.sum` verified stable.
+- Close two `501 not implemented` API stubs: `GET /containers/{id}/export` streams the container filesystem as tar, `GET /images/{name}/get` streams the image store as tar (404 when the data directory is missing).
+- Sync docs with reality: `docs/AUDIT.md` no longer references deleted workflows and its snapshot reports SBOM/fuzz as PASS; `docs/COMMANDS.md` uses real make targets (`test-race`, `e2e.yml`); `SECURITY.md` points to compose `secrets:` instead of a nonexistent `cardinal secret` command; `CHANGELOG.md` structural cleanup (removed mid-file logo and duplicate heading).
+- Harden input handling: `blueprint install --cpus/--memory` and blueprint template `CPUs`/`Memory` now fail with exit 1 on invalid values instead of silently becoming 0; `/proc/meminfo` parsing no longer ignores `Sscanf` errors; `ps -a` flag read checks its error.
+- Tighten `.golangci.yml`: enable `ineffassign`, `gofmt`, `goimports`, `misspell`, `godox`; drop blanket `func/type/field is unused` exclusions.
+- Remove dead code (`var _ = time.Now`, `var _ = container.New` + unused import) and deduplicate the `run`/`set` help texts into shared `runLongHelp`/`setLongHelp` constants reused by the root help; `.gitignore` now covers `*.log`/`*.tmp`.
 
 ## 2.0.31 (2026-09-08)
 
@@ -111,12 +123,6 @@
 - Document the current container inspection and mount metadata used by CARDINAL Desktop to scope per-container SFTP access.
 - Keep the CARDINAL API mount targets as the source of truth for integrations that expose container filesystems.
 
-<p align="center">
-  <img src="img/cardinal.png" alt="cardinal logo" width="100">
-</p>
-
-# Changelog
-
 ## 1.60.3 (2026-08-18)
 
 ### Interactive console fixes
@@ -170,7 +176,7 @@
 - Accept canonical and compatibility JSON field names for startup scripts.
 
 <!-- cardinal-current-release:start -->
-> Current release: **v2.0.31**. Detailed release notes below are maintained manually.
+> Current release: **v2.0.32**. Detailed release notes below are maintained manually.
 <!-- cardinal-current-release:end -->
 
 ## 1.25.3 (2026-08-17)

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -116,10 +117,10 @@ func readMemInfo() (total, used uint64, pct float64) {
 	var memTotal, memAvail uint64
 	for _, line := range strings.Split(string(b), "\n") {
 		if strings.HasPrefix(line, "MemTotal:") {
-			_, _ = fmt.Sscanf(line, "MemTotal: %d kB", &memTotal)
+			memTotal = parseMeminfoValue(line)
 		}
 		if strings.HasPrefix(line, "MemAvailable:") {
-			_, _ = fmt.Sscanf(line, "MemAvailable: %d kB", &memAvail)
+			memAvail = parseMeminfoValue(line)
 		}
 	}
 	memTotal *= 1024
@@ -129,6 +130,18 @@ func readMemInfo() (total, used uint64, pct float64) {
 		pct = float64(used) / float64(memTotal) * 100
 	}
 	return memTotal, used, pct
+}
+
+func parseMeminfoValue(line string) uint64 {
+	fields := strings.Fields(line)
+	if len(fields) < 2 {
+		return 0
+	}
+	v, err := strconv.ParseUint(fields[1], 10, 64)
+	if err != nil {
+		return 0
+	}
+	return v
 }
 
 func readCPUPercent() float64 {

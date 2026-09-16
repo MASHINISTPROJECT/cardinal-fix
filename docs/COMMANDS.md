@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.31`
-**Project release:** `v2.0.31`
+**Documentation version:** `2.0.32`
+**Project release:** `v2.0.32`
 <!-- cardinal-version:end -->
 
 # cardinal — Command verification map
@@ -101,8 +101,8 @@ entry — they appear in `cardinal backup --help` in alphabetical order.
 
 1. `make audit` — runs `scripts/audit.sh` (PASS / WARN / FAIL).
 2. `go test ./... -count=1` on Linux — runs unit + cobra smoke tests.
-3. `make run-race` — runs the same suite with `-race`.
-4. `make e2e` on a Linux runner with sudo — runs the e2e smoke workflow.
+3. `make test-race` — runs the same suite with `-race`.
+4. `.github/workflows/e2e.yml` on a Linux runner with sudo — runs the e2e smoke workflow.
 5. `make fuzz` for 30 seconds — exercises the Dockerfile parser.
 
 If a command is missing from this matrix, please open an issue or update
