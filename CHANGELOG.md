@@ -1,7 +1,14 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.33`
-**Project release:** `v2.0.33`
+**Documentation version:** `2.0.34`
+**Project release:** `v2.0.34`
 <!-- cardinal-version:end -->
+
+## 2.0.34 (2026-09-16)
+
+### Command audit and help fixes
+
+- Audited all 52 CLI commands: every registration resolves to an existing handler, no duplicates, docs matrix matches code exactly.
+- Fix `cardinal backup --help` missing the `generate-key` verb (dispatcher already supported it); refreshed the stale subcommand comment.
 
 ## 2.0.33 (2026-09-16)
 
@@ -184,7 +191,7 @@
 - Accept canonical and compatibility JSON field names for startup scripts.
 
 <!-- cardinal-current-release:start -->
-> Current release: **v2.0.33**. Detailed release notes below are maintained manually.
+> Current release: **v2.0.34**. Detailed release notes below are maintained manually.
 <!-- cardinal-current-release:end -->
 
 ## 1.25.3 (2026-08-17)

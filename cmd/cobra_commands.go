@@ -340,8 +340,8 @@ Examples:
 		}
 	}
 
-	// Sub-command examples: extend `backup` (legacy dispatch already
-	// supports `backup create|list|restore|enable|disable|status|verify`)
+	// Sub-command examples: extend `backup` (legacy dispatch supports
+	// `backup create|list|restore|enable|disable|status|verify|remove|generate-key`)
 	// and the security command.
 	attachBackupSubcommands()
 	attachSecuritySubcommands()
@@ -382,6 +382,7 @@ func attachBackupSubcommands() {
 		{"status", "Show scheduled backup status for a container"},
 		{"verify", "Verify the SHA-256 checksum of a backup archive"},
 		{"remove", "Delete a backup archive and its checksum"},
+		{"generate-key", "Generate an encryption key for encrypted backups"},
 	} {
 		s := sub
 		subCmd := &cobra.Command{

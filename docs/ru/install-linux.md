@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.33`
-**Project release:** `v2.0.33`
+**Documentation version:** `2.0.34`
+**Project release:** `v2.0.34`
 <!-- cardinal-version:end -->
 
 # Установка cardinal на Linux (Универсальная)
