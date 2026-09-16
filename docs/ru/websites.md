@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.32`
-**Project release:** `v2.0.32`
+**Documentation version:** `2.0.33`
+**Project release:** `v2.0.33`
 <!-- cardinal-version:end -->
 
 # Развёртывание сайтов с cardinal

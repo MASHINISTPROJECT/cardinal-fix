@@ -1,7 +1,15 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.32`
-**Project release:** `v2.0.32`
+**Documentation version:** `2.0.33`
+**Project release:** `v2.0.33`
 <!-- cardinal-version:end -->
+
+## 2.0.33 (2026-09-16)
+
+### Dead code removal and lint cleanup
+
+- Remove 18 unused symbols flagged by the tightened `unused` linter: dead compose refs, capability/namespace/restart-guard helpers superseded by live paths (`applyCapabilities`, `RestartBlocked` field, `containerNamespaceIdentities`), `ignoreErrWriter`, `flushBridgeNeigh`, builder `hashFile`, `ensureBuildDirs`, API `writeOK`/`containerStatus`, backup-restore wrapper, and the unset `system df` count field.
+- Fix `ineffassign` in the container router fallback (`err = nil` replaced with a clean rescan).
+- Fix `gofmt` alignment/blank-line nits across 16 files; `golangci-lint run ./...` is now clean.
 
 ## 2.0.32 (2026-09-16)
 
@@ -176,7 +184,7 @@
 - Accept canonical and compatibility JSON field names for startup scripts.
 
 <!-- cardinal-current-release:start -->
-> Current release: **v2.0.32**. Detailed release notes below are maintained manually.
+> Current release: **v2.0.33**. Detailed release notes below are maintained manually.
 <!-- cardinal-current-release:end -->
 
 ## 1.25.3 (2026-08-17)
