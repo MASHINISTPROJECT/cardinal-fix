@@ -75,7 +75,7 @@ if (-not (Get-Command go -ErrorAction SilentlyContinue)) {
 $TmpDir = "$env:TEMP\cardinal-build"
 if (Test-Path $TmpDir) { Remove-Item -Recurse -Force $TmpDir }
 Write-Host "[cardinal] Cloning cardinal repository..."
-git clone --depth 1 "https://github.com/animesao/cardinal.git" $TmpDir 2>&1 | Out-Null
+git clone --depth 1 "https://github.com/kuranix/cardinal.git" $TmpDir 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[cardinal] Git clone failed!" -ForegroundColor Red
     exit 1

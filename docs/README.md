@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
 <p align="center">
@@ -20,7 +20,7 @@ cardinal up                        cardinal cluster init
 cardinal serve                     cardinal fn deploy --name hello myfunc
 ```
 
-Version: see the root [`VERSION`](../VERSION) file — [GitHub](https://github.com/animesao/cardinal)
+Version: see the root [`VERSION`](../VERSION) file — [GitHub](https://github.com/kuranix/cardinal)
 
 ## Start here
 

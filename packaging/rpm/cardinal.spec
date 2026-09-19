@@ -4,7 +4,7 @@ Release:        1%{?dist}
 Summary:        Lightweight container runtime for Linux
 
 License:        MIT
-URL:            https://github.com/animesao/cardinal
+URL:            https://github.com/kuranix/cardinal
 Source0:        %{url}/releases/download/v%{version}/cardinal-linux-%{_arch}
 
 Requires:       iptables
@@ -61,5 +61,5 @@ systemctl daemon-reload 2>/dev/null || true
 /usr/lib/systemd/system/cardinal-bootstrap.service
 
 %changelog
-* Sat Aug 12 2026 animesao <animesao@users.noreply.github.com> - 1.23.2-1
+* Sat Aug 12 2026 kuranix <kuranix@users.noreply.github.com> - 1.23.2-1
 - Initial RPM package

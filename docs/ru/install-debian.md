@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
 # Установка cardinal на Debian / Ubuntu
@@ -11,7 +11,7 @@
 
 ```bash
 # Добавить репозиторий
-curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/scripts/install-apt.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/scripts/install-apt.sh | sudo bash
 
 # Установить
 sudo apt update
@@ -47,12 +47,12 @@ case "$ARCH" in
 esac
 
 # Получить последнюю версию
-TAG=$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
+TAG=$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
 VERSION="${TAG#v}"
 
 # Скачать и установить
 curl -fL -o "cardinal-${VERSION}-linux-${SUFFIX}.deb" \
-  "https://github.com/animesao/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-${SUFFIX}.deb"
+  "https://github.com/kuranix/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-${SUFFIX}.deb"
 sudo dpkg -i "cardinal-${VERSION}-linux-${SUFFIX}.deb"
 rm "cardinal-${VERSION}-linux-${SUFFIX}.deb"
 ```
@@ -60,7 +60,7 @@ rm "cardinal-${VERSION}-linux-${SUFFIX}.deb"
 ## Вариант 3: Универсальный установщик
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/install.sh | sudo bash
 ```
 
 ## Проверка

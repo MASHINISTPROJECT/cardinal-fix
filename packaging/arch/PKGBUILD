@@ -1,10 +1,10 @@
-# Maintainer: animesao <animesao@users.noreply.github.com>
+# Maintainer: kuranix <kuranix@users.noreply.github.com>
 pkgname=cardinal
 pkgver=1.23.2
 pkgrel=1
 pkgdesc='Lightweight container runtime for Linux'
 arch=('x86_64' 'aarch64')
-url='https://github.com/animesao/cardinal'
+url='https://github.com/kuranix/cardinal'
 license=('MIT')
 depends=('iptables' 'iproute2' 'util-linux' 'procps-ng' 'curl')
 optdepends=('ufw: firewall management')
@@ -120,10 +120,10 @@ Update cardinal to the latest version.
 .B doctor
 Run system diagnostics.
 .SH SEE ALSO
-.UR https://github.com/animesao/cardinal
+.UR https://github.com/kuranix/cardinal
 cardinal documentation
 .UE
 .SH AUTHOR
-animesao
+kuranix
 MAN
 }

@@ -6,10 +6,10 @@ platform: linux
 version: "__VERSION__"
 section: utils
 priority: optional
-maintainer: animesao <igorerantaev66@gmail.com>
+maintainer: kuranix <igorerantaev66@gmail.com>
 description: Lightweight container runtime for Linux
-vendor: animesao
-homepage: https://github.com/animesao/cardinal
+vendor: kuranix
+homepage: https://github.com/kuranix/cardinal
 license: MIT
 
 contents:
@@ -22,7 +22,7 @@ rpm:
 
 archlinux:
   pkgbase: cardinal
-  packager: animesao
+  packager: kuranix
 
 overrides:
   deb:

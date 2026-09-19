@@ -9,7 +9,7 @@
 # installer — it is NOT installed by this script.
 #
 # Hosted on GitHub. Usage:
-#   curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/install.sh | sudo bash
+#   curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/install.sh | sudo bash
 #
 # Everything (version detection, binaries, checksums) is downloaded
 # exclusively from the official GitHub repository.
@@ -134,7 +134,7 @@ log "━━━━━━━━━━━━━━━━━━━━━━━━━
 log "  Installing cardinal (container runtime)"
 log "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-REPO="animesao/cardinal"
+REPO="kuranix/cardinal"
 LATEST_TAG=""
 
 # Detect latest version from GitHub
@@ -250,4 +250,4 @@ log "  Quick start:"
 log "    cardinal pull alpine"
 log "    cardinal run --rm alpine echo hello"
 log "    cardinal --help"
-log ""
+log ""

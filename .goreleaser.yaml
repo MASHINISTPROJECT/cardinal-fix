@@ -19,10 +19,10 @@ nfpms:
   - package_name: cardinal
     file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}"
     formats: [deb, rpm, archlinux, apk]
-    vendor: animesao
-    homepage: https://github.com/animesao/cardinal
+    vendor: kuranix
+    homepage: https://github.com/kuranix/cardinal
     description: Lightweight container runtime
-    maintainer: animesao <animesao@users.noreply.github.com>
+    maintainer: kuranix <kuranix@users.noreply.github.com>
     license: MIT
     # We deliberately leave `contents:` empty here, even though it
     # looks tempting to add a `src: ./dist/cardinal_linux_<arch>/cardinal`
@@ -70,7 +70,7 @@ checksum:
 
 release:
   github:
-    owner: animesao
+    owner: kuranix
     name: cardinal
   extra_files:
     - glob: dist/*.deb

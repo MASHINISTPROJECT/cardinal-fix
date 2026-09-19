@@ -364,7 +364,7 @@ func fetchLatestVersion() (string, error) {
 
 func fetchVersionViaGit() (string, error) {
 	var stderr bytes.Buffer
-	cmd := exec.Command("git", "ls-remote", "--tags", "https://github.com/animesao/cardinal.git")
+	cmd := exec.Command("git", "ls-remote", "--tags", "https://github.com/kuranix/cardinal.git")
 	cmd.Stderr = &stderr
 	out, err := cmd.Output()
 	if err != nil {
@@ -465,7 +465,7 @@ func verifyCosignSignature(releaseTag, binaryName, _ string, sigURL, _ string) e
 
 	// Pin the certificate to the release workflow ref so a stolen key alone
 	// cannot re-sign a malicious build from a different workflow run.
-	idRegex := fmt.Sprintf("^https://github.com/animesao/cardinal/.github/workflows/release.yml@refs/tags/%s$",
+	idRegex := fmt.Sprintf("^https://github.com/kuranix/cardinal/.github/workflows/release.yml@refs/tags/%s$",
 		regexpQuoteMeta(releaseTag))
 
 	cmd := exec.Command(cosign, "verify-blob",

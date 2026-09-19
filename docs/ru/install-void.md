@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
 # Установка cardinal в Void Linux
@@ -98,7 +98,7 @@ none /sys/fs/cgroup cgroup2 defaults 0 0
 Строка `maintainers.md`:
 
 ```
-animesao <animesao@users.noreply.github.com> cardinal
+kuranix <kuranix@users.noreply.github.com> cardinal
 ```
 
 ## Редкий случай: pivot_root в контейнерах на Void

@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
 # Installing cardinal on Linux (Universal)
@@ -10,7 +10,7 @@ The universal installer works on any Linux distribution with systemd.
 ## Quick Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/install.sh | sudo bash
 ```
 
 This installs the latest stable binary to `/usr/local/bin/cardinal` and enables the systemd supervisor.

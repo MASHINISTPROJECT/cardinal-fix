@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
 # Void Linux xbps packaging for `cardinal`
@@ -57,7 +57,7 @@ Checklist before opening the PR:
 
 | Field | Value |
 |---|---|
-| `maintainer` | `animesao <animesao@users.noreply.github.com>` |
+| `maintainer` | `kuranix <kuranix@users.noreply.github.com>` |
 | `upstream` | not present in `void-packages` yet; submit a separate maintainership request first if you want to merge from the void-packages repo |
 | `repository` | `cardinal` |
 | `version` | follow the upstream tag |

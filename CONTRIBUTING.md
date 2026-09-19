@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
 <p align="center">
@@ -13,7 +13,7 @@ Thank you to everyone who helps improve **cardinal**.
 
 ## Maintainers
 
-- [animesao](https://github.com/animesao) — project maintainer and primary author.
+- [kuranix](https://github.com/kuranix) — project maintainer and primary author.
 
 ## Automation
 

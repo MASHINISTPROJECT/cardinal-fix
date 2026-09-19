@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
 # Installing cardinal on Void Linux
@@ -98,7 +98,7 @@ Once you have a green `./xbps-src pkg cardinal` for `x86_64-glibc`,
 The `maintainers.md` line should read:
 
 ```
-animesao <animesao@users.noreply.github.com> cardinal
+kuranix <kuranix@users.noreply.github.com> cardinal
 ```
 
 ## Solving the rare "pivot_root" failure on Void

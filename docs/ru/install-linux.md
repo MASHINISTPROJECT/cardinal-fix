@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
 # Установка cardinal на Linux (Универсальная)
@@ -10,7 +10,7 @@
 ## Быстрая установка
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/install.sh | sudo bash
 ```
 
 Устанавливает последнюю стабильную версию в `/usr/local/bin/cardinal` и включает systemd-супервизор.

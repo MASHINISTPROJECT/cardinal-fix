@@ -38,7 +38,7 @@ stdenv.mkDerivation {
 
   meta = with lib; {
     description = "Lightweight container runtime for Linux";
-    homepage = "https://github.com/animesao/cardinal";
+    homepage = "https://github.com/kuranix/cardinal";
     license = licenses.mit;
     platforms = platforms.linux;
     maintainers = [ ];

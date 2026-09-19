@@ -11,8 +11,8 @@ inherit go-module
 #   3. it binds `GOFLAGS` to -mod=vendor and unpacks the archive.
 
 DESCRIPTION="Lightweight, daemonless, OCI-compatible container runtime"
-HOMEPAGE="https://github.com/animesao/cardinal"
-SRC_URI="https://github.com/animesao/cardinal/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+HOMEPAGE="https://github.com/kuranix/cardinal"
+SRC_URI="https://github.com/kuranix/cardinal/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"

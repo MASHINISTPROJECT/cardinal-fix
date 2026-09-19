@@ -1,7 +1,14 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
+
+## 2.0.35 (2026-09-19)
+
+### Rename animesao -> kuranix
+
+- GitHub owner renamed `animesao` -> `kuranix`: all repo URLs, raw/API links, `*.github.io` pages, maintainer emails, goreleaser/nfpm metadata and docs updated.
+- No functional changes.
 
 ## 2.0.34 (2026-09-16)
 
@@ -80,7 +87,7 @@
 
 - Fix `cardinal blueprint ls/list` `official: parse error` — `fetchURL` now uses `curl -fsSL` with timeouts and proper HTTP error propagation instead of silent HTML return.
 - Improve `fetchBlueprintRegistry` diagnostics: include real `json.Unmarshal` error, 300-char preview, and hint for HTML/empty response; add hint to final error about `cardinal blueprint repo list` and `raw.githubusercontent.com` connectivity.
-- Auto-migrate legacy blueprint repository URLs (`dck-organization/dck-blueprints`, `animesao/dck-blueprints` → `cardinal-organization/cardinal-blueprints`) and normalize URLs on load; fix corrupted/empty `~/.cardinal/blueprint-repos.json` handling.
+- Auto-migrate legacy blueprint repository URLs (`dck-organization/dck-blueprints`, `kuranix/dck-blueprints` → `cardinal-organization/cardinal-blueprints`) and normalize URLs on load; fix corrupted/empty `~/.cardinal/blueprint-repos.json` handling.
 
 ## 1.60.11 (2026-08-18)
 
@@ -191,7 +198,7 @@
 - Accept canonical and compatibility JSON field names for startup scripts.
 
 <!-- cardinal-current-release:start -->
-> Current release: **v2.0.34**. Detailed release notes below are maintained manually.
+> Current release: **v2.0.35**. Detailed release notes below are maintained manually.
 <!-- cardinal-current-release:end -->
 
 ## 1.25.3 (2026-08-17)

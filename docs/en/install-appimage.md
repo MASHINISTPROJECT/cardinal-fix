@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
 # Installing cardinal via AppImage
@@ -18,12 +18,12 @@ Double-click the `.AppImage` file. A terminal-based installer will:
 
 ```bash
 # Get latest version
-TAG=$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
+TAG=$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
 VERSION="${TAG#v}"
 
 # Download
 curl -fL -o "cardinal-${VERSION}-linux-amd64.AppImage" \
-  "https://github.com/animesao/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-amd64.AppImage"
+  "https://github.com/kuranix/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-amd64.AppImage"
 chmod +x "cardinal-${VERSION}-linux-amd64.AppImage"
 
 # Install

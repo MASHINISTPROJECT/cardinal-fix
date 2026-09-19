@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
 <p align="center">
@@ -9,7 +9,7 @@
 
 <p align="center">
   <!-- cardinal-version-badge:start -->
-  <img src="https://img.shields.io/badge/version-v2.0.34-blue?style=flat-square">
+  <img src="https://img.shields.io/badge/version-v2.0.35-blue?style=flat-square">
   <!-- cardinal-version-badge:end -->
   <img src="https://img.shields.io/badge/go-1.26%2B-00ADD8?style=flat-square&logo=go">
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square">
@@ -25,7 +25,7 @@
 
 <p align="center">
   <a href="CONTRIBUTING.md">🤝 Contributing</a> ·
-  <a href="https://github.com/animesao/cardinal/graphs/contributors">GitHub contributors</a> ·
+  <a href="https://github.com/kuranix/cardinal/graphs/contributors">GitHub contributors</a> ·
   <a href="LICENSE">MIT License</a>
 </p>
 
@@ -41,10 +41,10 @@ curl http://localhost:8080
 
 ```bash
 # Universal installer (Linux distributions) — downloads only from GitHub
-curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/install.sh | sudo bash
 
 # Debian/Ubuntu APT repository installer (optional)
-curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/scripts/install-apt.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/scripts/install-apt.sh | sudo bash
 
 # Pull & run
 cardinal pull nginx:alpine
@@ -83,10 +83,10 @@ the systemd supervisor when available. The original AppImage remains portable.
 You can start the same installer explicitly with
 
 ```bash
-TAG="$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
+TAG="$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
 test -n "$TAG" || { echo "Could not determine the latest release" >&2; exit 1; }
 FILE="cardinal-${TAG#v}-linux-amd64.AppImage"
-curl -fL -o "$FILE" "https://github.com/animesao/cardinal/releases/download/$TAG/$FILE"
+curl -fL -o "$FILE" "https://github.com/kuranix/cardinal/releases/download/$TAG/$FILE"
 chmod +x "$FILE"
 "./$FILE" --install
 ```
@@ -753,7 +753,7 @@ Packages install into the overlay and persist across restarts.
 
 ## cardinal-wings — Container Management Agent
 
-[cardinal-wings](https://github.com/animesao/cardinal-wings) is a REST API daemon for managing containers remotely. It runs as a systemd service and allows frontends (like cardinal-panel) to control containers over HTTP.
+[cardinal-wings](https://github.com/kuranix/cardinal-wings) is a REST API daemon for managing containers remotely. It runs as a systemd service and allows frontends (like cardinal-panel) to control containers over HTTP.
 
 ```bash
 # Install (site mirror — no GitHub needed; prints URL + API token for the panel)
@@ -768,9 +768,9 @@ curl -H "Authorization: Bearer <api_key>" http://localhost:8080/v1/containers
 ```
 
 > If GitHub is unreachable (e.g. `curl: (28) SSL connection timeout`), install
-> [cardinal-wings](https://github.com/animesao/cardinal-wings) manually from its
+> [cardinal-wings](https://github.com/kuranix/cardinal-wings) manually from its
 > GitHub releases. The cardinal installer downloads everything exclusively
-> from [the official cardinal repository](https://github.com/animesao/cardinal).
+> from [the official cardinal repository](https://github.com/kuranix/cardinal).
 
 ---
 
@@ -942,7 +942,7 @@ cardinal run -d
 ## Changelog
 
 <!-- cardinal-release:start -->
-**v2.0.34** — Documentation, installation, AppImage, update, and release automation are synchronized from the root `VERSION` file.
+**v2.0.35** — Documentation, installation, AppImage, update, and release automation are synchronized from the root `VERSION` file.
 <!-- cardinal-release:end -->
 
 **v1.24.0** — Major security hardening: seccomp profile (blocks 30+ dangerous syscalls), AppArmor profile, device restrictions (/dev/shm, /dev/mqueue, /proc/sys, /sys read-only), network segmentation (`--isolated`), backup encryption (AES-256-GCM with `--encrypt`), audit logging for container lifecycle events, new CLI flags (`--seccomp-profile`, `--apparmor-profile`, `--isolated`, `--encrypted-backup`, `--audit-log`).
@@ -1038,7 +1038,7 @@ The project maintainer and verified contributors are listed in
 from commit authors, so contributors should use their own GitHub identity when
 opening pull requests or submitting commits.
 
-- [animesao](https://github.com/animesao) — maintainer and primary author.
+- [kuranix](https://github.com/kuranix) — maintainer and primary author.
 - `github-actions[bot]` — automated release and versioning workflow.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution rules and the process

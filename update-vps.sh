@@ -4,7 +4,7 @@ set -e
 echo "=== Updating cardinal CLI ==="
 cd /tmp
 rm -rf cardinal-update
-git clone https://github.com/animesao/cardinal.git cardinal-update
+git clone https://github.com/kuranix/cardinal.git cardinal-update
 cd cardinal-update
 CGO_ENABLED=0 go build -ldflags="-s -w" -o cardinal .
 pkill -f "cardinal " 2>/dev/null || true

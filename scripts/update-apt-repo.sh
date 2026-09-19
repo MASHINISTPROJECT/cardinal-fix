@@ -24,7 +24,7 @@ for deb in *.deb; do
         echo "Package: cardinal"
         echo "Version: ${VERSION}"
         echo "Architecture: amd64"
-        echo "Maintainer: animesao <animesao@users.noreply.github.com>"
+        echo "Maintainer: kuranix <kuranix@users.noreply.github.com>"
         echo "Filename: $deb"
         echo "Size: $SIZE"
         echo "SHA256: $SHA256"

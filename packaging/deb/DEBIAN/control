@@ -5,7 +5,7 @@ Priority: optional
 Architecture: amd64
 Depends: iproute2, iptables, util-linux, procps, curl, ca-certificates
 Recommends: ufw, git
-Maintainer: animesao <animesao@users.noreply.github.com>
+Maintainer: kuranix <kuranix@users.noreply.github.com>
 Description: cardinal — lightweight container runtime
  No daemon. No Docker. Just containers.
  .
@@ -22,4 +22,4 @@ Description: cardinal — lightweight container runtime
   * Multi-container config via cardinal.toml
   * Interactive exec, attach, logs
   * cardinal stats — live resource monitoring
-Homepage: https://github.com/animesao/cardinal
+Homepage: https://github.com/kuranix/cardinal

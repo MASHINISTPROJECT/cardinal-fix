@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.34`
-**Project release:** `v2.0.34`
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
 # Installing cardinal on Nix / NixOS
@@ -28,10 +28,10 @@ go build -trimpath -ldflags="-s -w -buildid= -X cardinal/cmd.version=${version}"
 
 ```bash
 # Try it (one-shot, no install required)
-nix run github:animesao/cardinal -- --version
+nix run github:kuranix/cardinal -- --version
 
 # Install for the current user (adds to ~/.nix-profile)
-nix profile install github:animesao/cardinal
+nix profile install github:kuranix/cardinal
 ```
 
 `nix run` drops you into a `cardinal ...` invocation with no global
@@ -44,7 +44,7 @@ on a non-NixOS system.
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    cardinal.url = "github:animesao/cardinal/v1.24.15";
+    cardinal.url = "github:kuranix/cardinal/v1.24.15";
     cardinal.inputs.nixpkgs.follows = "nixpkgs";
   };
 
@@ -78,7 +78,7 @@ After running `nixos-rebuild switch`, `cardinal` lands at
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
-    cardinal.url = "github:animesao/cardinal/v1.24.15";
+    cardinal.url = "github:kuranix/cardinal/v1.24.15";
   };
 
   outputs = { self, nixpkgs, home-manager, cardinal, ... }:
@@ -127,7 +127,7 @@ guarantees it advertises.
 ## Q & A
 
 **Q: Can I use `nix shell` to enter a dev shell?**
-A: Yes. `nix shell github:animesao/cardinal#devShells.<system>.default`
+A: Yes. `nix shell github:kuranix/cardinal#devShells.<system>.default`
 gives you a shell with `go`, `golangci-lint`, `shellcheck`,
 matching the upstream build matrix.
 
