@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.35`
-**Project release:** `v2.0.35`
+**Documentation version:** `2.1.0`
+**Project release:** `v2.1.0`
 <!-- cardinal-version:end -->
 
 # cardinal Command Examples

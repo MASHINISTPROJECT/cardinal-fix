@@ -1,9 +1,17 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.0.35`
-**Project release:** `v2.0.35`
+**Documentation version:** `2.1.0`
+**Project release:** `v2.1.0`
 <!-- cardinal-version:end -->
 
-## Unreleased
+## 2.1.0 (2026-09-20)
+
+### Rootless storage fallback, pull retry, run --replace
+
+- Overlay mount tries native, fuse-overlayfs, sudo helper, then vfs copy, with aggregated actionable errors; containers boot on bare WSL2 without extra packages.
+- Registry token fetch: 30s timeout with retries and backoff instead of a single 5s attempt.
+- `cardinal run --replace` replaces an existing same-name container; failed starts print retry/remove hints.
+- Rootless network backend detection (slirp4netns/pasta) with clear errors and `--network host/none` guidance.
+- Branching model: `develop` integration branch, PR guard workflow, CI on `develop`.
 
 ### Rename kuranix -> animesao
 
@@ -206,7 +214,7 @@
 - Accept canonical and compatibility JSON field names for startup scripts.
 
 <!-- cardinal-current-release:start -->
-> Current release: **v2.0.35**. Detailed release notes below are maintained manually.
+> Current release: **v2.1.0**. Detailed release notes below are maintained manually.
 <!-- cardinal-current-release:end -->
 
 ## 1.25.3 (2026-08-17)
