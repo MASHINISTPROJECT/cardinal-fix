@@ -465,17 +465,26 @@ jobs:
       # the softprops step above hiccups (network blip, GH API
       # slowdown, glob mismatch on a partial rerun).
       #
-      # Namespacing the artefact per `github.ref_name` keeps the
-      # tag-specific tarballs from clobbering one another across
-      # tag reruns. `if-no-files-found: error` would fail the step
-      # if goreleaser did not produce anything -- we relax to
+      # Namespacing the artefact per ref keeps the tag-specific
+      # tarballs from clobbering one another across tag reruns.
+      # `github.ref_name` is used raw nowhere: branch names like
+      # `docs/branching-model` and PR refs like `5/merge` contain
+      # `/`, which upload-artifact rejects, so slashes are replaced
+      # with `-` first. `if-no-files-found: error` would fail the
+      # step if goreleaser did not produce anything -- we relax to
       # `warn` so a polluted-but-still-running goreleaser step
       # does not poison the whole release-job status.
+      - name: Compute safe artefact suffix
+        run: |
+          safe="${GITHUB_REF_NAME//\//-}"
+          echo "SAFE_REF_NAME=$safe" >> "$GITHUB_ENV"
+          echo "artefact suffix: $safe"
+
       - name: Upload full release artefacts (npm/deb/rpm/apk/pkg.tar.zst)
         if: always() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
         uses: actions/upload-artifact@v4
         with:
-          name: cardinal-release-${{ github.ref_name }}
+          name: cardinal-release-${{ env.SAFE_REF_NAME }}
           path: |
             dist/*.tar.gz
             dist/*.deb
