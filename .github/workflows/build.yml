@@ -8,10 +8,13 @@ name: build
 #
 # Trigger matrix:
 #
-#   push (main/master)  → run everything, upload artefacts
-#   pull_request        → run lint+test+build only (cancel-in-progress)
-#   tag v*              → run everything + create a GitHub Release
-#   workflow_dispatch   → manual rerun for the maintainer
+#   push (main/master/develop) → run everything, upload artefacts
+#                               (develop is the integration branch: every
+#                               push there must stay green before it is
+#                               merged into main)
+#   pull_request                → run lint+test+build only (cancel-in-progress)
+#   tag v*                      → run everything + create a GitHub Release
+#   workflow_dispatch           → manual rerun for the maintainer
 #
 # Pipeline steps (executed in order; build/test run in parallel):
 #
@@ -30,11 +33,11 @@ name: build
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, develop]
     tags:
       - "v*"
   pull_request:
-    branches: [main, master]
+    branches: [main, master, develop]
   workflow_dispatch:
 
 # Cancel superseded PR builds to save runner minutes; serialise tag
