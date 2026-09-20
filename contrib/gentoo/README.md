@@ -66,7 +66,7 @@ REQUIRED before sending the PR:
 | Field | Value |
 |---|---|
 | `DESCRIPTION` | lightweight, daemonless, OCI-compatible container runtime |
-| `HOMEPAGE` | https://github.com/kuranix/cardinal |
+| `HOMEPAGE` | https://github.com/animesao/cardinal |
 | `LICENSE` | MIT (must match upstream LICENSE file) |
 | `SLOT` | 0 |
 | `KEYWORDS` | start with `~amd64`, add more as testing progresses |

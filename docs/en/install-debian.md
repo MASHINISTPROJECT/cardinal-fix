@@ -11,7 +11,7 @@ Add the official cardinal APT repository and install:
 
 ```bash
 # Add repository
-curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/scripts/install-apt.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/scripts/install-apt.sh | sudo bash
 
 # Install
 sudo apt update
@@ -47,12 +47,12 @@ case "$ARCH" in
 esac
 
 # Get latest version
-TAG=$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
+TAG=$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
 VERSION="${TAG#v}"
 
 # Download and install
 curl -fL -o "cardinal-${VERSION}-linux-${SUFFIX}.deb" \
-  "https://github.com/kuranix/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-${SUFFIX}.deb"
+  "https://github.com/animesao/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-${SUFFIX}.deb"
 sudo dpkg -i "cardinal-${VERSION}-linux-${SUFFIX}.deb"
 rm "cardinal-${VERSION}-linux-${SUFFIX}.deb"
 ```
@@ -60,7 +60,7 @@ rm "cardinal-${VERSION}-linux-${SUFFIX}.deb"
 ## Option 3: Universal Installer
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/install.sh | sudo bash
 ```
 
 ## Verify

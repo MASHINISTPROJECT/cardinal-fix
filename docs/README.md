@@ -20,7 +20,7 @@ cardinal up                        cardinal cluster init
 cardinal serve                     cardinal fn deploy --name hello myfunc
 ```
 
-Version: see the root [`VERSION`](../VERSION) file — [GitHub](https://github.com/kuranix/cardinal)
+Version: see the root [`VERSION`](../VERSION) file — [GitHub](https://github.com/animesao/cardinal)
 
 ## Start here
 

@@ -98,7 +98,7 @@ none /sys/fs/cgroup cgroup2 defaults 0 0
 Строка `maintainers.md`:
 
 ```
-kuranix <kuranix@users.noreply.github.com> cardinal
+animesao <animesao@users.noreply.github.com> cardinal
 ```
 
 ## Редкий случай: pivot_root в контейнерах на Void

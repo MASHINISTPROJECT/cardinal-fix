@@ -18,12 +18,12 @@ AppImage — портативный формат, не требующий мен
 
 ```bash
 # Получить последнюю версию
-TAG=$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
+TAG=$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
 VERSION="${TAG#v}"
 
 # Скачать
 curl -fL -o "cardinal-${VERSION}-linux-amd64.AppImage" \
-  "https://github.com/kuranix/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-amd64.AppImage"
+  "https://github.com/animesao/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-amd64.AppImage"
 chmod +x "cardinal-${VERSION}-linux-amd64.AppImage"
 
 # Установить

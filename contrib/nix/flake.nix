@@ -33,7 +33,7 @@
           inherit version;
 
           src = pkgs.fetchFromGitHub {
-            owner = "kuranix";
+            owner = "animesao";
             repo = "cardinal";
             rev = "refs/tags/v${version}";
             sha256 = srcSha;       # first build prints the real one
@@ -71,18 +71,18 @@
               serverless workloads (FaaS), single-node clusters,
               blueprints, and Docker-Compose-style `up`/`down` flows.
             '';
-            homepage = "https://github.com/kuranix/cardinal";
+            homepage = "https://github.com/animesao/cardinal";
             license = licenses.mit;
             platforms = platforms.linux;
             mainProgram = "cardinal";
             maintainers = [{
-              name = "kuranix";
-              email = "kuranix@users.noreply.github.com";
+              name = "animesao";
+              email = "animesao@users.noreply.github.com";
             }];
           };
         };
 
-        # `nix run github:kuranix/cardinal` should drop the user straight
+        # `nix run github:animesao/cardinal` should drop the user straight
         # into a `cardinal --version` invocation.
         apps.default = {
           type = "app";

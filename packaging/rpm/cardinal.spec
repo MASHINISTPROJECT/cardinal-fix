@@ -4,7 +4,7 @@ Release:        1%{?dist}
 Summary:        Lightweight container runtime for Linux
 
 License:        MIT
-URL:            https://github.com/kuranix/cardinal
+URL:            https://github.com/animesao/cardinal
 Source0:        %{url}/releases/download/v%{version}/cardinal-linux-%{_arch}
 
 Requires:       iptables

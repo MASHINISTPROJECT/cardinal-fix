@@ -34,7 +34,7 @@ uname -a
 The install script auto-detects your distro and installs cardinal + dependencies:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/install.sh | sudo bash
 ```
 
 Supported distros: **Ubuntu, Debian, Arch, Manjaro, Fedora, RHEL, CentOS, Rocky, Alma, openSUSE, Alpine, Void Linux**, and more.
@@ -54,14 +54,14 @@ makepkg -si
 
 **Fedora / RHEL / CentOS:**
 
-Download and install the latest RPM asset from the [GitHub release page](https://github.com/kuranix/cardinal/releases/latest):
+Download and install the latest RPM asset from the [GitHub release page](https://github.com/animesao/cardinal/releases/latest):
 
 ```bash
-TAG="$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
+TAG="$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
 test -n "$TAG" || { echo "Could not determine the latest release" >&2; exit 1; }
 VERSION="${TAG#v}"
 FILE="cardinal-${VERSION}-linux-amd64.rpm"
-curl -fL -o "$FILE" "https://github.com/kuranix/cardinal/releases/download/$TAG/$FILE"
+curl -fL -o "$FILE" "https://github.com/animesao/cardinal/releases/download/$TAG/$FILE"
 sudo dnf install "./$FILE"
 # On older systems:
 # sudo rpm -Uvh "./$FILE"
@@ -69,14 +69,14 @@ sudo dnf install "./$FILE"
 
 **Debian / Ubuntu (.deb):**
 
-Download and install the latest DEB asset from the [GitHub release page](https://github.com/kuranix/cardinal/releases/latest):
+Download and install the latest DEB asset from the [GitHub release page](https://github.com/animesao/cardinal/releases/latest):
 
 ```bash
-TAG="$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
+TAG="$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
 test -n "$TAG" || { echo "Could not determine the latest release" >&2; exit 1; }
 VERSION="${TAG#v}"
 FILE="cardinal-${VERSION}-linux-amd64.deb"
-curl -fL -o "$FILE" "https://github.com/kuranix/cardinal/releases/download/$TAG/$FILE"
+curl -fL -o "$FILE" "https://github.com/animesao/cardinal/releases/download/$TAG/$FILE"
 sudo apt install "./$FILE"
 ```
 
@@ -87,10 +87,10 @@ are not uploaded automatically to the Snap Store. Download and install the
 versioned `.snap` asset directly:
 
 ```bash
-TAG="$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"\]*\)".*/\1/p')"
+TAG="$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"\]*\)".*/\1/p')"
 test -n "$TAG" || { echo "Could not determine the latest release" >&2; exit 1; }
 FILE="cardinal-${TAG#v}-linux-amd64.snap"
-curl -fL -o "$FILE" "https://github.com/kuranix/cardinal/releases/download/$TAG/$FILE"
+curl -fL -o "$FILE" "https://github.com/animesao/cardinal/releases/download/$TAG/$FILE"
 sudo snap install --dangerous --classic "$FILE"
 ```
 
@@ -100,7 +100,7 @@ because cardinal needs host namespace, mount, cgroup, and networking capabilitie
 **Manual binary install:**
 
 ```bash
-curl -fsSL https://github.com/kuranix/cardinal/releases/latest/download/cardinal-linux-amd64 -o /tmp/cardinal-new
+curl -fsSL https://github.com/animesao/cardinal/releases/latest/download/cardinal-linux-amd64 -o /tmp/cardinal-new
 sudo install -D -m 0755 /tmp/cardinal-new /usr/local/bin/cardinal
 rm -f /tmp/cardinal-new
 cardinal bootstrap --install
@@ -109,15 +109,15 @@ cardinal bootstrap --install
 **AppImage (amd64 and arm64):**
 
 AppImage is a self-contained executable format. Download the matching asset
-from the [latest GitHub release](https://github.com/kuranix/cardinal/releases/latest),
+from the [latest GitHub release](https://github.com/animesao/cardinal/releases/latest),
 make it executable, and run it directly:
 
 ```bash
 # x86_64 / amd64: resolve the current release asset automatically
-TAG="$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
+TAG="$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
 test -n "$TAG" || { echo "Could not determine the latest release" >&2; exit 1; }
 FILE="cardinal-${TAG#v}-linux-amd64.AppImage"
-curl -fL -o "$FILE" "https://github.com/kuranix/cardinal/releases/download/$TAG/$FILE"
+curl -fL -o "$FILE" "https://github.com/animesao/cardinal/releases/download/$TAG/$FILE"
 chmod +x "$FILE"
 "./$FILE" version
 
@@ -199,7 +199,7 @@ If `cardinal update` cannot download the binary (older releases failed with `Fai
 
 ```bash
 curl -fsSL --connect-timeout 10 -o /tmp/cardinal-new \
-  https://github.com/kuranix/cardinal/releases/latest/download/cardinal-linux-amd64
+  https://github.com/animesao/cardinal/releases/latest/download/cardinal-linux-amd64
 sudo install -D -m 0755 /tmp/cardinal-new /usr/local/bin/cardinal
 rm -f /tmp/cardinal-new
 sudo systemctl restart cardinal-bootstrap   # if the systemd supervisor is installed
@@ -883,7 +883,7 @@ The updater used to time out after ten seconds, which was too short for multi-me
 
 ```bash
 curl -fsSL --connect-timeout 10 -o /tmp/cardinal-new \
-  https://github.com/kuranix/cardinal/releases/latest/download/cardinal-linux-amd64
+  https://github.com/animesao/cardinal/releases/latest/download/cardinal-linux-amd64
 sudo install -D -m 0755 /tmp/cardinal-new /usr/local/bin/cardinal
 rm -f /tmp/cardinal-new
 sudo systemctl restart cardinal-bootstrap

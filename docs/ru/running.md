@@ -34,7 +34,7 @@ uname -a
 Скрипт автоматически определяет дистрибутив и устанавливает cardinal + зависимости:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/install.sh | sudo bash
 ```
 
 Поддерживаемые дистрибутивы: **Ubuntu, Debian, Arch, Manjaro, Fedora, RHEL, CentOS, Rocky, Alma, openSUSE, Alpine, Void Linux** и другие.
@@ -54,14 +54,14 @@ makepkg -si
 
 **Fedora / RHEL / CentOS:**
 
-Скачайте и установите последний RPM asset со [страницы GitHub-релиза](https://github.com/kuranix/cardinal/releases/latest):
+Скачайте и установите последний RPM asset со [страницы GitHub-релиза](https://github.com/animesao/cardinal/releases/latest):
 
 ```bash
-TAG="$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
+TAG="$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
 test -n "$TAG" || { echo "Не удалось определить последний релиз" >&2; exit 1; }
 VERSION="${TAG#v}"
 FILE="cardinal-${VERSION}-linux-amd64.rpm"
-curl -fL -o "$FILE" "https://github.com/kuranix/cardinal/releases/download/$TAG/$FILE"
+curl -fL -o "$FILE" "https://github.com/animesao/cardinal/releases/download/$TAG/$FILE"
 sudo dnf install "./$FILE"
 # Для старых систем:
 # sudo rpm -Uvh "./$FILE"
@@ -69,14 +69,14 @@ sudo dnf install "./$FILE"
 
 **Debian / Ubuntu (.deb):**
 
-Скачайте и установите последний DEB asset со [страницы GitHub-релиза](https://github.com/kuranix/cardinal/releases/latest):
+Скачайте и установите последний DEB asset со [страницы GitHub-релиза](https://github.com/animesao/cardinal/releases/latest):
 
 ```bash
-TAG="$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
+TAG="$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
 test -n "$TAG" || { echo "Не удалось определить последний релиз" >&2; exit 1; }
 VERSION="${TAG#v}"
 FILE="cardinal-${VERSION}-linux-amd64.deb"
-curl -fL -o "$FILE" "https://github.com/kuranix/cardinal/releases/download/$TAG/$FILE"
+curl -fL -o "$FILE" "https://github.com/animesao/cardinal/releases/download/$TAG/$FILE"
 sudo apt install "./$FILE"
 ```
 
@@ -87,10 +87,10 @@ Snap-пакеты собираются для каждого релиза и п�
 asset `.snap` напрямую:
 
 ```bash
-TAG="$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"\]*\)".*/\1/p')"
+TAG="$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"\]*\)".*/\1/p')"
 test -n "$TAG" || { echo "Не удалось определить последний релиз" >&2; exit 1; }
 FILE="cardinal-${TAG#v}-linux-amd64.snap"
-curl -fL -o "$FILE" "https://github.com/kuranix/cardinal/releases/download/$TAG/$FILE"
+curl -fL -o "$FILE" "https://github.com/animesao/cardinal/releases/download/$TAG/$FILE"
 sudo snap install --dangerous --classic "$FILE"
 ```
 
@@ -100,7 +100,7 @@ sudo snap install --dangerous --classic "$FILE"
 **Ручная установка бинарника:**
 
 ```bash
-curl -fsSL https://github.com/kuranix/cardinal/releases/latest/download/cardinal-linux-amd64 -o /tmp/cardinal-new
+curl -fsSL https://github.com/animesao/cardinal/releases/latest/download/cardinal-linux-amd64 -o /tmp/cardinal-new
 sudo install -D -m 0755 /tmp/cardinal-new /usr/local/bin/cardinal
 rm -f /tmp/cardinal-new
 cardinal bootstrap --install
@@ -109,15 +109,15 @@ cardinal bootstrap --install
 **AppImage (amd64 и arm64):**
 
 AppImage — это самодостаточный исполняемый формат. Скачайте подходящий asset
-из [последнего GitHub-релиза](https://github.com/kuranix/cardinal/releases/latest),
+из [последнего GitHub-релиза](https://github.com/animesao/cardinal/releases/latest),
 добавьте право на запуск и запустите файл напрямую:
 
 ```bash
 # x86_64 / amd64
-TAG="$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
+TAG="$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')"
 test -n "$TAG" || { echo "Не удалось определить последний релиз" >&2; exit 1; }
 FILE="cardinal-${TAG#v}-linux-amd64.AppImage"
-curl -fL -o "$FILE" "https://github.com/kuranix/cardinal/releases/download/$TAG/$FILE"
+curl -fL -o "$FILE" "https://github.com/animesao/cardinal/releases/download/$TAG/$FILE"
 chmod +x "$FILE"
 "./$FILE" version
 
@@ -202,7 +202,7 @@ cardinal run --rm alpine:latest echo "CARDINAL UPDATE OK"
 
 ```bash
 curl -fsSL --connect-timeout 10 -o /tmp/cardinal-new \
-  https://github.com/kuranix/cardinal/releases/latest/download/cardinal-linux-amd64
+  https://github.com/animesao/cardinal/releases/latest/download/cardinal-linux-amd64
 sudo install -D -m 0755 /tmp/cardinal-new /usr/local/bin/cardinal
 rm -f /tmp/cardinal-new
 sudo systemctl restart cardinal-bootstrap   # если установлен systemd supervisor
@@ -886,7 +886,7 @@ cardinal logs ИМЯ
 
 ```bash
 curl -fsSL --connect-timeout 10 -o /tmp/cardinal-new \
-  https://github.com/kuranix/cardinal/releases/latest/download/cardinal-linux-amd64
+  https://github.com/animesao/cardinal/releases/latest/download/cardinal-linux-amd64
 sudo install -D -m 0755 /tmp/cardinal-new /usr/local/bin/cardinal
 rm -f /tmp/cardinal-new
 sudo systemctl restart cardinal-bootstrap

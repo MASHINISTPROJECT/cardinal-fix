@@ -20,7 +20,7 @@ pkgs.buildGoModule {
   inherit version;
 
   src = pkgs.fetchFromGitHub {
-    owner = "kuranix";
+    owner = "animesao";
     repo = "cardinal";
     rev = "refs/tags/v${version}";
     sha256 = srcSha;
@@ -38,7 +38,7 @@ pkgs.buildGoModule {
 
   meta = with pkgs.lib; {
     description = "Lightweight, daemonless, OCI-compatible container runtime.";
-    homepage = "https://github.com/kuranix/cardinal";
+    homepage = "https://github.com/animesao/cardinal";
     license = licenses.mit;
     platforms = platforms.linux;
     mainProgram = "cardinal";
