@@ -47,8 +47,8 @@ func migrateLegacyRepoURL(url string) (string, bool) {
 	if strings.Contains(url, "dck-organization") {
 		url = strings.ReplaceAll(url, "dck-organization", "cardinal-organization")
 	}
-	// Old personal fork kuranix/dck-blueprints or kuranix/cardinal-blueprints -> official
-	if strings.Contains(url, "kuranix/") && strings.Contains(url, "blueprints") {
+	// Old personal forks (kuranix/*, animesao/*) of dck-blueprints or cardinal-blueprints -> official
+	if (strings.Contains(url, "kuranix/") || strings.Contains(url, "animesao/")) && strings.Contains(url, "blueprints") {
 		url = "https://raw.githubusercontent.com/cardinal-organization/cardinal-blueprints"
 	}
 	url = strings.TrimSuffix(url, "/")

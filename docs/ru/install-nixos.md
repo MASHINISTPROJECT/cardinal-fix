@@ -27,10 +27,10 @@ go build -trimpath -ldflags="-s -w -buildid= -X cardinal/cmd.version=${version}"
 
 ```bash
 # Однократный запуск, без глобальных изменений
-nix run github:kuranix/cardinal -- --version
+nix run github:animesao/cardinal -- --version
 
 # Установка для текущего пользователя
-nix profile install github:kuranix/cardinal
+nix profile install github:animesao/cardinal
 ```
 
 `nix run` запускает `cardinal ...` без изменения состояния системы;
@@ -42,7 +42,7 @@ nix profile install github:kuranix/cardinal
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    cardinal.url = "github:kuranix/cardinal/v1.24.15";
+    cardinal.url = "github:animesao/cardinal/v1.24.15";
     cardinal.inputs.nixpkgs.follows = "nixpkgs";
   };
 
@@ -76,7 +76,7 @@ nix profile install github:kuranix/cardinal
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
-    cardinal.url = "github:kuranix/cardinal/v1.24.15";
+    cardinal.url = "github:animesao/cardinal/v1.24.15";
   };
 
   outputs = { self, nixpkgs, home-manager, cardinal, ... }:
@@ -133,6 +133,6 @@ boot.kernelFeatures.enable = [ "cgroup_namespaces" "userns" ];
 см. `contrib/nix/README.md`.
 
 **В: Можно воспользоваться `nix shell`?**
-О: Да. `nix shell github:kuranix/cardinal#devShells.<system>.default`
+О: Да. `nix shell github:animesao/cardinal#devShells.<system>.default`
 откроет шелл с `go`, `golangci-lint`, `shellcheck` — теми же
 инструментами, что в upstream build-matrix.

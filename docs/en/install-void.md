@@ -98,7 +98,7 @@ Once you have a green `./xbps-src pkg cardinal` for `x86_64-glibc`,
 The `maintainers.md` line should read:
 
 ```
-kuranix <kuranix@users.noreply.github.com> cardinal
+animesao <animesao@users.noreply.github.com> cardinal
 ```
 
 ## Solving the rare "pivot_root" failure on Void

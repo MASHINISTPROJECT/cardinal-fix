@@ -57,7 +57,7 @@ Checklist before opening the PR:
 
 | Field | Value |
 |---|---|
-| `maintainer` | `kuranix <kuranix@users.noreply.github.com>` |
+| `maintainer` | `animesao <animesao@users.noreply.github.com>` |
 | `upstream` | not present in `void-packages` yet; submit a separate maintainership request first if you want to merge from the void-packages repo |
 | `repository` | `cardinal` |
 | `version` | follow the upstream tag |

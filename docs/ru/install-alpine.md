@@ -20,12 +20,12 @@ case "$ARCH" in
 esac
 
 # Получить последнюю версию
-TAG=$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
+TAG=$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
 VERSION="${TAG#v}"
 
 # Скачать и установить
 curl -fL -o "cardinal-${VERSION}-linux-${SUFFIX}.apk" \
-  "https://github.com/kuranix/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-${SUFFIX}.apk"
+  "https://github.com/animesao/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-${SUFFIX}.apk"
 sudo apk add --allow-untrusted "cardinal-${VERSION}-linux-${SUFFIX}.apk"
 rm "cardinal-${VERSION}-linux-${SUFFIX}.apk"
 ```
@@ -33,17 +33,17 @@ rm "cardinal-${VERSION}-linux-${SUFFIX}.apk"
 ## Вариант 2: Универсальный установщик
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/install.sh | sudo bash
 ```
 
 ## Вариант 3: Архив с бинарником
 
 ```bash
-TAG=$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
+TAG=$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
 VERSION="${TAG#v}"
 
 curl -fL -o "cardinal-${VERSION}-linux-amd64.tar.gz" \
-  "https://github.com/kuranix/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-amd64.tar.gz"
+  "https://github.com/animesao/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-amd64.tar.gz"
 tar xzf "cardinal-${VERSION}-linux-amd64.tar.gz"
 sudo mv "cardinal-${VERSION}/cardinal" /usr/local/bin/cardinal
 rm -rf "cardinal-${VERSION}" "cardinal-${VERSION}-linux-amd64.tar.gz"

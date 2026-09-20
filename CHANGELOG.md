@@ -3,6 +3,14 @@
 **Project release:** `v2.0.35`
 <!-- cardinal-version:end -->
 
+## Unreleased
+
+### Rename kuranix -> animesao
+
+- GitHub owner renamed `kuranix` -> `animesao`: all repo URLs, raw/API links, `*.github.io` pages, maintainer emails, goreleaser/nfpm metadata and docs updated.
+- Blueprint repo migration now accepts both legacy `kuranix/*` and `animesao/*` personal-fork URLs.
+- No functional changes.
+
 ## 2.0.35 (2026-09-19)
 
 ### Rename animesao -> kuranix

@@ -9,7 +9,7 @@
 package cmd
 
 var (
-	repoURL          = "https://raw.githubusercontent.com/kuranix/cardinal"
-	releaseURL       = "https://github.com/kuranix/cardinal"
+	repoURL          = "https://raw.githubusercontent.com/animesao/cardinal"
+	releaseURL       = "https://github.com/animesao/cardinal"
 	blueprintRepoURL = "https://raw.githubusercontent.com/cardinal-organization/cardinal-blueprints"
 )

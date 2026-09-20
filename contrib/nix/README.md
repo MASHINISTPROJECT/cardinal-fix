@@ -18,14 +18,14 @@ Both produce the same derivation. Pick whichever matches your workflow.
 
 ```bash
 # One-shot, runnable shell wrapper that points to `--version`
-nix run github:kuranix/cardinal -- --version
+nix run github:animesao/cardinal -- --version
 
 # Persistent install for the current user
-nix profile install github:kuranix/cardinal
+nix profile install github:animesao/cardinal
 
 # Add to a NixOS system configuration
 {
-  inputs.cardinal.url = "github:kuranix/cardinal/v1.24.16";
+  inputs.cardinal.url = "github:animesao/cardinal/v1.24.16";
   outputs.nixosConfigurations.example = nixpkgs.lib.nixosSystem {
     modules = [
       ({ pkgs, ... }: { environment.systemPackages = [ inputs.cardinal.packages.${system}.default ]; })
@@ -52,7 +52,7 @@ fetchFromGitHub + buildGoModule pair; doing it for our flake keeps it
 honest and reproducible.
 
 If you're a **consumer** installing from the canonical
-`github:kuranix/cardinal`, you do not need to fix hashes yourself —
+`github:animesao/cardinal`, you do not need to fix hashes yourself —
 the flake already carries them (post-tag).
 
 ## Verification after install

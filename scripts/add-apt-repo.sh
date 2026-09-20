@@ -1,6 +1,6 @@
 #!/bin/sh
 # Add the cardinal APT repository.
-# Usage: curl -sSL https://raw.githubusercontent.com/kuranix/cardinal/main/scripts/add-apt-repo.sh | sudo bash
+# Usage: curl -sSL https://raw.githubusercontent.com/animesao/cardinal/main/scripts/add-apt-repo.sh | sudo bash
 #
 # The repository is signed with the maintainer's key (see docs/apt/keyring.gpg).
 # APT verifies the Release file signature on every `apt update`, so packages
@@ -15,8 +15,8 @@ fi
 KEYRING_DIR="/etc/apt/keyrings"
 KEYRING_FILE="${KEYRING_DIR}/cardinal-archive-keyring.gpg"
 SOURCES_FILE="/etc/apt/sources.list.d/cardinal.sources"
-REPO_URL="https://kuranix.github.io/cardinal/apt"
-KEY_URL="https://kuranix.github.io/cardinal/keyring.gpg"
+REPO_URL="https://animesao.github.io/cardinal/apt"
+KEY_URL="https://animesao.github.io/cardinal/keyring.gpg"
 
 # Modern apt supports /etc/apt/keyrings/ with dearmored single-key files.
 # Older releases fall back to apt-key (deprecated but still functional).

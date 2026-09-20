@@ -20,12 +20,12 @@ case "$ARCH" in
 esac
 
 # Получить последнюю версию
-TAG=$(curl -fsSL https://api.github.com/repos/kuranix/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
+TAG=$(curl -fsSL https://api.github.com/repos/animesao/cardinal/releases/latest | sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p')
 VERSION="${TAG#v}"
 
 # Скачать
 curl -fL -o "cardinal-${VERSION}-linux-${SUFFIX}.tar.gz" \
-  "https://github.com/kuranix/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-${SUFFIX}.tar.gz"
+  "https://github.com/animesao/cardinal/releases/download/${TAG}/cardinal-${VERSION}-linux-${SUFFIX}.tar.gz"
 ```
 
 ## Вариант 1: Распаковка и установка
@@ -41,7 +41,7 @@ rm -rf "cardinal-${VERSION}" "cardinal-${VERSION}-linux-${SUFFIX}.tar.gz"
 
 ```bash
 curl -fL -o /usr/local/bin/cardinal \
-  "https://github.com/kuranix/cardinal/releases/download/${TAG}/cardinal-linux-${SUFFIX}"
+  "https://github.com/animesao/cardinal/releases/download/${TAG}/cardinal-linux-${SUFFIX}"
 chmod +x /usr/local/bin/cardinal
 ```
 
@@ -49,7 +49,7 @@ chmod +x /usr/local/bin/cardinal
 
 ```bash
 # Требуется Go 1.26+
-git clone https://github.com/kuranix/cardinal.git
+git clone https://github.com/animesao/cardinal.git
 cd cardinal
 go build -tags netgo -ldflags="-s -w" -o /usr/local/bin/cardinal .
 ```

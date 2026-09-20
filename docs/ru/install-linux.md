@@ -10,7 +10,7 @@
 ## Быстрая установка
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/kuranix/cardinal/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/install.sh | sudo bash
 ```
 
 Устанавливает последнюю стабильную версию в `/usr/local/bin/cardinal` и включает systemd-супервизор.
