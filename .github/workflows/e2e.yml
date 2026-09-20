@@ -23,11 +23,13 @@ name: Linux E2E
 # setup-go v7 changed the cache interface). Dependabot is asked to
 # ignore major version bumps via .github/dependabot.yml.
 
+# develop is included so the integration branch gets the same
+# privileged smoke coverage as main before it is released.
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, develop]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, develop]
   workflow_dispatch:
 
 permissions:

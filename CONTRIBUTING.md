@@ -42,6 +42,36 @@ Contributions are welcome:
 
 Please do not add a person to this file without their permission. New contributors can be added after a merged contribution or by request.
 
+## Branching model
+
+Permanent branches:
+
+- `main` — stable, releasable code. No everyday development here.
+- `develop` — integration branch for current development. Finished changes land here first.
+
+Temporary branches (created from `develop`, deleted after merge):
+
+| Prefix      | Use                          | Example                |
+|-------------|------------------------------|------------------------|
+| `feature/`  | New functionality            | `feature/volume-limit` |
+| `fix/`      | Regular bug fixes            | `fix/config-parser`    |
+| `refactor/` | Refactoring without new feat | `refactor/cli`         |
+| `docs/`     | Documentation only           | `docs/api`             |
+
+`hotfix/*` is the only exception: it is created from `main` for urgent fixes to published code, merged into `main`, then back-merged into `develop` so the fix is never lost.
+
+Flow:
+
+```text
+feature/* → develop → main
+fix/*      → develop → main
+refactor/* → develop → main
+docs/*     → develop → main
+hotfix/*   → main (+ back-merge into develop)
+```
+
+Pull requests to `main` are accepted only from `develop` or `hotfix/*` (plus `dependabot/*`, which targets the default branch by design). CI (`build`, `Linux E2E`) runs on both `main` and `develop`, and the `branch-guard` workflow flags PRs opened against the wrong base branch.
+
 ## Packaging for a Linux distribution we don't yet ship
 
 The [`.goreleaser.yaml`](.goreleaser.yaml) handles five formats out

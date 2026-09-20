@@ -1,0 +1,56 @@
+name: branch-guard
+
+# Advisory enforcement of the branching model documented in
+# CONTRIBUTING.md ("Branching model"):
+#
+#   feature/*, fix/*, refactor/*, docs/* → develop → main
+#   hotfix/*                            → main (+ back-merge into develop)
+#
+# This workflow only *signals*: it fails the check with an explanatory
+# message but never pushes, rewrites history, or blocks direct pushes
+# (only GitHub branch protection can do that, and it is intentionally
+# not managed from here). Exceptions:
+#   - dependabot/* → main (bot targets the default branch by design)
+#   - develop → main (the release flow)
+#   - hotfix/* → main and hotfix/* → develop (urgent fixes + back-merge)
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: branch conventions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check PR base/head against the branching model
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          echo "PR: '${HEAD_REF}' -> '${BASE_REF}'"
+          fail() { echo "::error::$1"; exit 1; }
+
+          if [ "${BASE_REF}" = "main" ]; then
+            case "${HEAD_REF}" in
+              develop|hotfix/*|dependabot/*)
+                echo "OK: '${HEAD_REF}' may target main"
+                ;;
+              *)
+                fail "PR to 'main' must come from 'develop' or 'hotfix/*' (got '${HEAD_REF}'). Retarget feature/fix/refactor/docs branches to 'develop'."
+                ;;
+            esac
+          elif [ "${BASE_REF}" = "develop" ]; then
+            case "${HEAD_REF}" in
+              main)
+                fail "Do not open PRs from 'main' into 'develop'. Release flow is develop -> main; urgent fixes go via 'hotfix/* -> main' plus a back-merge into 'develop'."
+                ;;
+              *)
+                echo "OK: '${HEAD_REF}' may target develop"
+                ;;
+            esac
+          fi
