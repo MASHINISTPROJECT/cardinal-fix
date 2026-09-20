@@ -33,9 +33,9 @@ func CheckRootlessPrereqs() ([]string, []string) {
 		warnings = append(warnings, "fuse-overlayfs not found: overlayfs will not work in rootless mode")
 	}
 
-	// Check slirp4netns
-	if _, err := exec.LookPath("slirp4netns"); err != nil {
-		warnings = append(warnings, "slirp4netns not found: networking will not work in rootless mode. Install with: apt install slirp4netns")
+	// Check rootless network backend: slirp4netns (implemented) or pasta (detected, exec wiring is a follow-up)
+	if RootlessNetworkBackend() == "" {
+		warnings = append(warnings, "no rootless network backend found (slirp4netns or pasta): bridge networking will not work in rootless mode. Install with: apt install slirp4netns (or passt for pasta), or use --network host/none")
 	}
 
 	// Check newuidmap/newgidmap
@@ -96,10 +96,22 @@ func RootlessOverlaySupported() bool {
 	return err == nil
 }
 
+// RootlessNetworkBackend reports the available userspace network backend:
+// "slirp4netns" (fully wired), "pasta" (detected; exec wiring is a follow-up),
+// or "" when neither is installed.
+func RootlessNetworkBackend() string {
+	if _, err := exec.LookPath("slirp4netns"); err == nil {
+		return "slirp4netns"
+	}
+	if _, err := exec.LookPath("pasta"); err == nil {
+		return "pasta"
+	}
+	return ""
+}
+
 // RootlessNetworkSupported returns true if rootless networking is available
 func RootlessNetworkSupported() bool {
-	_, err := exec.LookPath("slirp4netns")
-	return err == nil
+	return RootlessNetworkBackend() != ""
 }
 
 // MountRootlessOverlay mounts an overlay filesystem using fuse-overlayfs
@@ -113,10 +125,16 @@ func MountRootlessOverlay(lower, upper, work, merged string) error {
 	return nil
 }
 
-// SetupRootlessNetwork sets up networking via slirp4netns
+// SetupRootlessNetwork sets up networking via the detected backend.
+// slirp4netns is fully wired; pasta is detected but its attach is not wired
+// yet, so it fails with an actionable message instead of a bare "not found".
 func SetupRootlessNetwork(pid int, containerID string) (string, error) {
-	if !RootlessNetworkSupported() {
-		return "", fmt.Errorf("slirp4netns not available")
+	switch RootlessNetworkBackend() {
+	case "slirp4netns":
+	case "pasta":
+		return "", fmt.Errorf("pasta backend detected but not wired yet: install slirp4netns (apt install slirp4netns) or use --network host/none")
+	default:
+		return "", fmt.Errorf("no rootless network backend (need slirp4netns or pasta): apt install slirp4netns, or use --network host/none")
 	}
 
 	// slirp4netns creates a tap device in the container's netns

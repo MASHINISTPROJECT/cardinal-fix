@@ -332,11 +332,14 @@ Examples:
 	// is treated as an image operation).
 	register(commandSpec{"import", "Import an image from a tar.gz archive", Import, ""})
 
-	// "init" shadowing on shell completion — provide a hidden alias for
-	// back-compat.
+	helperMount := register(commandSpec{"helper-mount", "Privileged overlay mount helper (internal, via sudo)", HelperMount, ""})
+	helperMount.Hidden = true
 	for _, c := range allCommands {
 		if c.Use == "init" {
 			c.Aliases = append(c.Aliases, "init-container")
+		}
+		if c.Use == "console-serve" {
+			c.Hidden = true
 		}
 	}
 

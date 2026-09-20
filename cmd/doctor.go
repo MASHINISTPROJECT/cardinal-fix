@@ -90,7 +90,27 @@ func collectDiagnostics() []diagnostic {
 	checks = append(checks, checkRequiredCommands()...)
 	checks = append(checks, checkKernelFeatures()...)
 	checks = append(checks, checkRootless()...)
+	checks = append(checks, checkStorageDrivers()...)
 	checks = append(checks, checkAPIConfiguration()...)
+	return checks
+}
+
+func checkStorageDrivers() []diagnostic {
+	driver, detail := container.DetectStorageDriver()
+	status := diagnosticOK
+	if driver == container.DriverVFS {
+		status = diagnosticWarn
+		detail += "; CoW unavailable, containers will use slower vfs copy"
+	}
+	if _, err := exec.LookPath("cp"); err != nil {
+		return []diagnostic{{name: "storage driver", status: diagnosticFail, detail: "cp not found, vfs fallback unavailable"}}
+	}
+	checks := []diagnostic{{name: "storage driver", status: status, detail: fmt.Sprintf("%s (%s)", driver, detail)}}
+	if container.HelperAvailable() {
+		checks = append(checks, diagnostic{name: "helper mount", status: diagnosticOK, detail: "sudo available for privileged overlay mount"})
+	} else {
+		checks = append(checks, diagnostic{name: "helper mount", status: diagnosticWarn, detail: "sudo not found, helper mount unavailable"})
+	}
 	return checks
 }
 

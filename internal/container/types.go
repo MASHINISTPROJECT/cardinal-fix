@@ -99,6 +99,7 @@ type Container struct {
 	PortForwardPIDs []int         `json:"port_forward_pids,omitempty"`
 	Secrets         []SecretMount `json:"secrets,omitempty"`
 	Configs         []SecretMount `json:"configs,omitempty"`
+	StorageDriver   string        `json:"storage_driver,omitempty"`
 
 	// Runtime-only (not persisted)
 	cancelHealth   context.CancelFunc `json:"-"`

@@ -1,6 +1,9 @@
 package image
 
-import "testing"
+import (
+	"context"
+	"testing"
+)
 
 func TestParseBearerChallenge(t *testing.T) {
 	realm, service, scope := parseBearerChallenge(
@@ -60,5 +63,13 @@ func TestPullScope(t *testing.T) {
 				t.Fatalf("pullScope(%q, %q) = %q, want %q", tc.challenge, tc.repo, got, tc.want)
 			}
 		})
+	}
+}
+
+func TestGetTokenWithRetryCanceledContext(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := getTokenWithRetry(ctx, "library/nginx"); err == nil {
+		t.Fatal("expected error for canceled context, got token")
 	}
 }

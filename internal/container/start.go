@@ -284,8 +284,15 @@ func (c *Container) setupFilesystem() (merged string, err error) {
 	}
 
 	if _, err := os.Stat(mergedDir); os.IsNotExist(err) || !isOverlayMounted(mergedDir) {
-		if err := SetupOverlay(rootfsDir, upper, work, mergedDir); err != nil {
-			return "", fmt.Errorf("overlay: %w", err)
+		if readDriverMarker(mergedDir) != DriverVFS || !nonEmptyDir(mergedDir) {
+			if err := SetupOverlay(rootfsDir, upper, work, mergedDir); err != nil {
+				return "", err
+			}
+			if driver := readDriverMarker(mergedDir); driver != "" {
+				c.StorageDriver = string(driver)
+			}
+		} else {
+			c.StorageDriver = string(DriverVFS)
 		}
 	}
 
