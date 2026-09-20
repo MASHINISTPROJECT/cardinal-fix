@@ -295,14 +295,15 @@ fi
 # must have a matching `func X(args []string)` definition in cmd/*.go. This
 # is the cheapest static guarantee against typos and silent registration
 # gaps. A handful of names have known free-function aliases (start/startCmd,
-# console-serve/ConsoleServe, version/versionCommand, init/initContainer)
-# and we map them explicitly so the audit script does not flag them as
-# missing.
+# console-serve/ConsoleServe, version/versionCommand, init/initContainer,
+# helper-mount/HelperMount) and we map them explicitly so the audit script
+# does not flag them as missing.
 declare -A COBRA_NAME_ALIAS=(
 	[start]=StartCmd
 	[console-serve]=ConsoleServe
 	[version]=versionCommand
 	[init]=initContainer
+	[helper-mount]=HelperMount
 )
 if [[ -f cmd/cobra_commands.go ]]; then
 	missing=0
