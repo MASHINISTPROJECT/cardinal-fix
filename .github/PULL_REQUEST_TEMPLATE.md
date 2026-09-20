@@ -1,3 +1,8 @@
+<!-- cardinal-version:start -->
+**Documentation version:** `2.0.35`
+**Project release:** `v2.0.35`
+<!-- cardinal-version:end -->
+
 ## What
 
 <!-- One paragraph: what changes and why. -->
