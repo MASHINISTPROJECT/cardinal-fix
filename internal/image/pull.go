@@ -162,9 +162,7 @@ func PullWithPlatformContext(ctx context.Context, ref, platformOS, platformArch 
 
 	fmt.Printf("Pulling %s:%s...\n", name, tag)
 
-	sumCtx, sumCancel := context.WithTimeout(ctx, 5*time.Second)
-	defer sumCancel()
-	token, err := getTokenWithContext(sumCtx, name)
+	token, err := getTokenWithRetry(ctx, name)
 	if err != nil {
 		return nil, fmt.Errorf("auth: %w", err)
 	}
@@ -361,6 +359,40 @@ func ReadConfig(name, tag string) (*ContainerConfig, error) {
 
 func getToken(repo string) (string, error) {
 	return getTokenWithContext(context.Background(), repo)
+}
+
+// tokenFetchTimeout is deliberately generous: auth.docker.io from WSL2
+// or behind a slow DNS regularly exceeds a few seconds, and a hard 5s
+// timeout used to turn that into `context deadline exceeded`.
+const tokenFetchTimeout = 30 * time.Second
+
+var tokenRetryBackoffs = []time.Duration{time.Second, 2 * time.Second, 4 * time.Second}
+
+// getTokenWithRetry fetches a registry pull token with per-attempt timeout
+// and exponential backoff. It honors parent context cancellation between
+// attempts and aggregates every attempt into the final error.
+func getTokenWithRetry(ctx context.Context, repo string) (string, error) {
+	var errs []string
+	attempts := len(tokenRetryBackoffs) + 1
+	for attempt := 0; attempt < attempts; attempt++ {
+		if attempt > 0 {
+			select {
+			case <-ctx.Done():
+				return "", ctx.Err()
+			case <-time.After(tokenRetryBackoffs[attempt-1]):
+			}
+			fmt.Printf("  auth retry %d/%d...\n", attempt+1, attempts)
+		}
+		tctx, cancel := context.WithTimeout(ctx, tokenFetchTimeout)
+		token, err := getTokenWithContext(tctx, repo)
+		cancel()
+		if err == nil {
+			return token, nil
+		}
+		errs = append(errs, err.Error())
+	}
+	return "", fmt.Errorf("token after %d attempts (%s); check DNS/proxy (env HTTP_PROXY/HTTPS_PROXY) and reachability of auth.docker.io",
+		attempts, strings.Join(errs, "; "))
 }
 
 func getManifest(repo, ref, token string) (*ManifestV2, error) {

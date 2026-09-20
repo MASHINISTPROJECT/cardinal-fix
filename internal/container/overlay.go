@@ -10,23 +10,15 @@ import (
 	"strings"
 
 	"cardinal/internal/log"
-	"cardinal/internal/overlayutil"
 )
 
 func mountOverlay(lower, upper, work, merged string) error {
-	if IsRootless() {
-		return MountRootlessOverlay(lower, upper, work, merged)
-	}
-
-	if err := overlayutil.MountOverlay(lower, upper, work, merged); err != nil {
-		return err
-	}
-
-	return nil
+	_, err := MountOverlayWithFallback(lower, upper, work, merged)
+	return err
 }
 
 func unmountOverlay(merged string) {
-	overlayutil.UnmountOverlay(merged)
+	UnmountOverlayWithFallback(merged)
 }
 
 func isMounted(path string) bool {

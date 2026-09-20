@@ -96,6 +96,7 @@ func Run(args []string) {
 	interactive := fs.Bool("i", false, "Interactive mode")
 	tty := fs.Bool("t", false, "Allocate TTY")
 	rm := fs.Bool("rm", false, "Remove container on exit")
+	replace := fs.Bool("replace", false, "Replace existing container with the same name (removes it first)")
 	hostname := fs.String("h", "", "Container hostname")
 	restart := fs.String("restart", "", "Restart policy")
 	restartDelay := fs.String("restart-delay", "", "Delay before automatic restart (e.g. 10s, 1m)")
@@ -318,9 +319,28 @@ func Run(args []string) {
 
 	if *name != "" {
 		if existing := container.FindByName(*name); existing != nil {
-			fmt.Fprintf(os.Stderr, "Error: container with name %q already exists (%s)\n", *name, shortID(existing.ID))
-			exitFunc(1)
+			if *replace {
+				loaded, err := container.Load(existing.ID)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Error loading existing container %q: %v\n", *name, err)
+					exitFunc(1)
+				}
+				if err := loaded.Remove(true); err != nil {
+					fmt.Fprintf(os.Stderr, "Error replacing container %q: %v\n", *name, err)
+					exitFunc(1)
+				}
+				fmt.Fprintf(os.Stderr, "Replaced existing container %q\n", *name)
+			} else {
+				fmt.Fprintf(os.Stderr, "Error: container with name %q already exists (%s)\n", *name, shortID(existing.ID))
+				fmt.Fprintln(os.Stderr, "Hint: `cardinal run --replace ...` to replace, `cardinal rm -f "+*name+"` to remove, or `cardinal start "+*name+"` to start the existing one")
+				exitFunc(1)
+			}
 		}
+	}
+
+	if driver, detail := container.DetectStorageDriver(); driver == container.DriverVFS {
+		fmt.Fprintf(os.Stderr, "Warning: storage driver vfs (%s). Containers will use a full copy without CoW.\n", detail)
+		fmt.Fprintln(os.Stderr, "Hint: `sudo apt install -y fuse-overlayfs` or run `cardinal doctor` for details")
 	}
 
 	// Parse labels
@@ -445,6 +465,11 @@ func Run(args []string) {
 
 	if err := c.Start(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error starting container: %v\n", err)
+		if *name != "" {
+			fmt.Fprintf(os.Stderr, "Container kept as %q (status created). Fix the cause, then `cardinal start %s` to retry or `cardinal rm %s` to drop it.\n", *name, *name, *name)
+		} else {
+			fmt.Fprintf(os.Stderr, "Container kept as %s (status created). Use `cardinal ps -a` to find it.\n", shortID(c.ID))
+		}
 		exitFunc(1)
 	}
 	if *restart == "always" || *restart == "unless-stopped" {
