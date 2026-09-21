@@ -1039,7 +1039,9 @@ from commit authors, so contributors should use their own GitHub identity when
 opening pull requests or submitting commits.
 
 - [animesao](https://github.com/animesao) — maintainer and primary author.
+- [MASHINISTPROJECT](https://github.com/MASHINISTPROJECT) — installer, image pull progress bar, uninstall script fixes.
 - `github-actions[bot]` — automated release and versioning workflow.
+- `dependabot[bot]` — automated dependency updates.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution rules and the process
 for adding new contributors with their permission.
