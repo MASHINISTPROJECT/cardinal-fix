@@ -18,6 +18,11 @@ Thank you to everyone who helps improve **cardinal**.
 ## Automation
 
 - `github-actions[bot]` — automated versioning and release workflow updates.
+- `dependabot[bot]` — automated dependency updates.
+
+## Contributors
+
+- [MASHINISTPROJECT](https://github.com/MASHINISTPROJECT) — Linux installer fixes (`install.sh`), image pull progress bar (`internal/image/pull.go`), uninstall script fixes (`uninstall.sh`) via PR #10, #12.
 
 ## How to contribute
 
