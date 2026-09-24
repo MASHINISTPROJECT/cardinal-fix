@@ -82,7 +82,7 @@ services:
 		t.Errorf("Image = %q, want docker.io/alpine:latest", app.Image)
 	}
 	wantEnv := map[string]string{
-		"DB_PASSWORD":         "secret-db",
+		"DB_PASSWORD":            "secret-db",
 		"CARDINAL_INTERP_DOTENV": "from-dotenv",
 	}
 	if !reflect.DeepEqual(app.Env, wantEnv) {
