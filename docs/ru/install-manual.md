@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.1.0`
-**Project release:** `v2.1.0`
+**Documentation version:** `2.1.5`
+**Project release:** `v2.1.5`
 <!-- cardinal-version:end -->
 
 # Установка cardinal — Ручная установка бинарника

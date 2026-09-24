@@ -1,9 +1,9 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.1.0`
-**Project release:** `v2.1.0`
+**Documentation version:** `2.1.5`
+**Project release:** `v2.1.5`
 <!-- cardinal-version:end -->
 
-## 2.2.0 (2026-09-24)
+## 2.1.5 (2026-09-24)
 
 ### Compose: variable interpolation, multi env_file, port ranges
 
@@ -12,6 +12,31 @@
 - Long-syntax volumes support `type: bind` and `type: tmpfs` with `tmpfs.size` and `read_only`.
 - Port mappings support host and container ranges across the shared parser: `cardinal run -p 8000-8010:80`, compose `ports`, and blueprints (`8000-8010:80`, `8000-8010:9000-9002`); invalid specs now fail with a clear error instead of being silently dropped.
 - New `internal/portmap` package with `container.ParsePortMapping` shared by `run`, `up`, and blueprints (14 unit-test cases); `run` rejects anonymous host ports (`-p 9000`) with an actionable message.
+
+## 2.1.4 (2026-09-21)
+
+### Re-release on green build
+
+- Same code as 2.1.3, fresh tag so consumers can pin a green build of the release pipeline.
+
+## 2.1.3 (2026-09-21)
+
+### Contributors and cleanup
+
+- README contributors section, `.env.example` removed, `develop` merge.
+
+## 2.1.2 (2026-09-21)
+
+### Uninstall and deps
+
+- `uninstall.sh` rewrite with safer cleanup, `golang.org/x/sys` bump, dependabot merge.
+
+## 2.1.1 (2026-09-21)
+
+### Installer and pull progress
+
+- Linux installer rework: mirror-first downloads with timeouts and IPv4 fallback.
+- Pull progress bar fix; `.gitignore` covers build artifacts.
 
 ## 2.1.0 (2026-09-20)
 
@@ -224,7 +249,7 @@
 - Accept canonical and compatibility JSON field names for startup scripts.
 
 <!-- cardinal-current-release:start -->
-> Current release: **v2.1.0**. Detailed release notes below are maintained manually.
+> Current release: **v2.1.5**. Detailed release notes below are maintained manually.
 <!-- cardinal-current-release:end -->
 
 ## 1.25.3 (2026-08-17)
