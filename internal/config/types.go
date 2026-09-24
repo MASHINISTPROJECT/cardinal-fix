@@ -1,5 +1,7 @@
 package config
 
+import "fmt"
+
 type HealthcheckConfig struct {
 	Cmd      string `toml:"cmd"`
 	Interval int    `toml:"interval,omitempty"`
@@ -78,13 +80,36 @@ type ConfigSpec struct {
 
 type DependsOnConfig map[string]string // service_name -> condition ("" | "service_started" | "service_healthy" | "service_completed_successfully")
 
+// StringList accepts a single scalar or a list, so TOML configs may keep
+// writing `env_file = "path"` while compose-style `env_file = ["a", "b"]`
+// also works.
+type StringList []string
+
+func (s *StringList) UnmarshalTOML(data interface{}) error {
+	switch v := data.(type) {
+	case string:
+		*s = []string{v}
+	case []interface{}:
+		for _, item := range v {
+			if str, ok := item.(string); ok && str != "" {
+				*s = append(*s, str)
+			}
+		}
+	case []string:
+		*s = append([]string(nil), v...)
+	default:
+		return fmt.Errorf("expected string or list of strings, got %T", data)
+	}
+	return nil
+}
+
 type ContainerConfig struct {
 	Image        string             `toml:"image"`
 	Command      string             `toml:"command,omitempty"`
 	Ports        []string           `toml:"ports,omitempty"`
 	Volumes      []string           `toml:"volumes,omitempty"`
 	Env          map[string]string  `toml:"env,omitempty"`
-	EnvFile      string             `toml:"env_file,omitempty"`
+	EnvFile      StringList         `toml:"env_file,omitempty"`
 	Restart      string             `toml:"restart,omitempty"`
 	RestartDelay string             `toml:"restart_delay,omitempty" yaml:"restart_delay,omitempty"`
 	Hostname     string             `toml:"hostname,omitempty"`

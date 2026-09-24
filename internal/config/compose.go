@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -153,6 +154,8 @@ func LoadCompose(path string) (*Config, error) {
 		return nil, fmt.Errorf("parse compose YAML: %w", err)
 	}
 
+	lookup := composeLookup(filepath.Dir(path))
+
 	cfg := &Config{
 		Secrets:   make(map[string]SecretSpec),
 		Configs:   make(map[string]ConfigSpec),
@@ -175,11 +178,11 @@ func LoadCompose(path string) (*Config, error) {
 			networkName = composeNetworkName(svc.Networks)
 		}
 		cc := ContainerConfig{
-			Image:        svc.Image,
+			Image:        interpolate(svc.Image, lookup),
 			Restart:      svc.Restart,
 			RestartDelay: svc.RestartDelay,
-			Hostname:     svc.Hostname,
-			WorkDir:      svc.WorkingDir,
+			Hostname:     interpolate(svc.Hostname, lookup),
+			WorkDir:      interpolate(svc.WorkingDir, lookup),
 			User:         svc.User,
 			NetworkMode:  networkName,
 			Network:      networkName,
@@ -205,34 +208,54 @@ func LoadCompose(path string) (*Config, error) {
 		cc.CPUs = svc.CPUs
 
 		for _, p := range svc.Ports {
-			cc.Ports = append(cc.Ports, normalizePort(p))
+			cc.Ports = append(cc.Ports, normalizePort(interpolate(p, lookup)))
 		}
 
-		cc.Env = parseComposeEnv(svc.Environment)
-		cc.EnvFile = parseComposeEnvFile(svc.EnvFile)
-		cc.Command = parseComposeCommand(svc.Command)
+		cc.Env = parseComposeEnv(svc.Environment, lookup)
+		cc.EnvFile = parseComposeEnvFile(svc.EnvFile, lookup)
+		cc.Command = parseComposeCommand(svc.Command, lookup)
 
-		if ep := parseComposeCommand(svc.Entrypoint); ep != "" {
+		if ep := parseComposeCommand(svc.Entrypoint, lookup); ep != "" {
 			cc.Entrypoint = ep
 		}
 
 		for _, v := range svc.Volumes {
 			switch vol := v.(type) {
 			case string:
-				cc.Volumes = append(cc.Volumes, vol)
+				cc.Volumes = append(cc.Volumes, interpolate(vol, lookup))
 			case map[string]interface{}:
 				src, _ := vol["source"].(string)
 				tgt, _ := vol["target"].(string)
 				if src == "" {
 					src, _ = vol["src"].(string)
 				}
-				if src != "" && tgt != "" {
-					mount := src + ":" + tgt
+				mtype, _ := vol["type"].(string)
+				if tgt == "" {
+					continue
+				}
+				var mount string
+				switch mtype {
+				case "tmpfs":
+					mount = "tmpfs:" + interpolate(tgt, lookup)
+					if tm := vol["tmpfs"]; tm != nil {
+						if opts, ok := tm.(map[string]interface{}); ok {
+							if size, ok := opts["size"].(string); ok && size != "" {
+								mount += ":size=" + interpolate(size, lookup)
+							} else if n, ok := opts["size"].(int); ok && n > 0 {
+								mount += ":size=" + fmt.Sprintf("%d", n)
+							}
+						}
+					}
+				default:
+					if src == "" {
+						continue
+					}
+					mount = interpolate(src, lookup) + ":" + interpolate(tgt, lookup)
 					if ro, ok := vol["read_only"].(bool); ok && ro {
 						mount += ":ro"
 					}
-					cc.Volumes = append(cc.Volumes, mount)
 				}
+				cc.Volumes = append(cc.Volumes, mount)
 			}
 		}
 
@@ -515,7 +538,7 @@ func tryLoad(path string) (*Config, string, error) {
 	}
 }
 
-func parseComposeEnv(env interface{}) map[string]string {
+func parseComposeEnv(env interface{}, lookup func(string) (string, bool)) map[string]string {
 	result := make(map[string]string)
 	if env == nil {
 		return result
@@ -526,59 +549,79 @@ func parseComposeEnv(env interface{}) map[string]string {
 		for _, item := range e {
 			if s, ok := item.(string); ok {
 				if parts := strings.SplitN(s, "=", 2); len(parts) == 2 {
-					result[parts[0]] = parts[1]
+					result[parts[0]] = interpolate(parts[1], lookup)
+				} else if s != "" {
+					// "KEY" without value — inherit from the host/.env
+					// environment.
+					if v, ok := lookup(s); ok {
+						result[s] = v
+					}
 				}
 			}
 		}
 	case map[string]interface{}:
 		for k, v := range e {
-			result[k] = fmt.Sprintf("%v", v)
+			if v == nil {
+				// "KEY: null" — inherit from the host/.env environment.
+				if hv, ok := lookup(k); ok {
+					result[k] = hv
+				}
+				continue
+			}
+			result[k] = interpolate(fmt.Sprintf("%v", v), lookup)
 		}
 	case map[string]string:
 		for k, v := range e {
-			result[k] = v
+			result[k] = interpolate(v, lookup)
 		}
 	}
 
 	return result
 }
 
-func parseComposeEnvFile(ef interface{}) string {
+func parseComposeEnvFile(ef interface{}, lookup func(string) (string, bool)) []string {
 	if ef == nil {
-		return ""
+		return nil
 	}
+	var files []string
 	switch e := ef.(type) {
 	case string:
-		return e
+		files = append(files, interpolate(e, lookup))
 	case []interface{}:
-		if len(e) > 0 {
-			if s, ok := e[0].(string); ok {
-				return s
+		for _, item := range e {
+			if s, ok := item.(string); ok && s != "" {
+				files = append(files, interpolate(s, lookup))
 			}
 		}
 	case []string:
-		if len(e) > 0 {
-			return e[0]
+		for _, s := range e {
+			if s != "" {
+				files = append(files, interpolate(s, lookup))
+			}
 		}
 	}
-	return ""
+	return files
 }
 
-func parseComposeCommand(cmd interface{}) string {
+func parseComposeCommand(cmd interface{}, lookup func(string) (string, bool)) string {
 	if cmd == nil {
 		return ""
 	}
 	switch c := cmd.(type) {
 	case string:
-		return c
+		return interpolate(c, lookup)
 	case []interface{}:
 		parts := make([]string, len(c))
 		for i, v := range c {
-			parts[i] = fmt.Sprintf("%v", v)
+			parts[i] = interpolate(fmt.Sprintf("%v", v), lookup)
 		}
 		return strings.Join(parts, " ")
 	case []string:
-		return strings.Join(c, " ")
+		parts := make([]string, len(c))
+		for i, v := range c {
+			parts[i] = interpolate(v, lookup)
+		}
+		return strings.Join(parts, " ")
 	}
 	return ""
 }

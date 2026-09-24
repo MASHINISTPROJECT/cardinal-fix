@@ -288,27 +288,14 @@ func Up(args []string) {
 		}
 
 		for _, p := range cc.Ports {
-			proto := "tcp"
-			portSpec := p
-			if parts := strings.SplitN(p, "/", 2); len(parts) == 2 {
-				proto = parts[1]
-				portSpec = parts[0]
+			mappings, parseErr := container.ParsePortMapping(p)
+			if parseErr != nil {
+				fmt.Fprintf(os.Stderr, "  %s: invalid port mapping %q: %v\n", name, p, parseErr)
+				continue
 			}
-			parts := strings.SplitN(portSpec, ":", 2)
-			if len(parts) == 2 {
-				var host, cont int
-				if _, err := fmt.Sscanf(parts[0], "%d", &host); err != nil {
-					continue
-				}
-				if _, err := fmt.Sscanf(parts[1], "%d", &cont); err != nil {
-					continue
-				}
-				if host > 0 && cont > 0 {
-					opts.Ports = append(opts.Ports, container.PortMap{
-						HostPort:      host,
-						ContainerPort: cont,
-						Protocol:      proto,
-					})
+			for _, pm := range mappings {
+				if pm.HostPort > 0 && pm.ContainerPort > 0 {
+					opts.Ports = append(opts.Ports, pm)
 				}
 			}
 		}
@@ -325,10 +312,10 @@ func Up(args []string) {
 		for k, v := range cc.Env {
 			opts.Env = append(opts.Env, k+"="+v)
 		}
-		if cc.EnvFile != "" {
-			fileEnv, err := container.ParseEnvFile(cc.EnvFile)
+		for _, envFile := range cc.EnvFile {
+			fileEnv, err := container.ParseEnvFile(envFile)
 			if err != nil {
-				fmt.Fprintf(os.Stderr, "  %s: error reading env_file %s: %v\n", name, cc.EnvFile, err)
+				fmt.Fprintf(os.Stderr, "  %s: error reading env_file %s: %v\n", name, envFile, err)
 				continue
 			}
 			opts.Env = append(opts.Env, fileEnv...)
