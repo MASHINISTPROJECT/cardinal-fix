@@ -3,6 +3,16 @@
 **Project release:** `v2.1.0`
 <!-- cardinal-version:end -->
 
+## 2.2.0 (2026-09-24)
+
+### Compose: variable interpolation, multi env_file, port ranges
+
+- Compose-style variable substitution in `image`, `ports`, `volumes`, `environment`, `command`, `entrypoint`, `hostname`, `working_dir`, and `env_file` paths — `$VAR`, `${VAR}`, `${VAR:-default}`, `${VAR-default}`, `$$`. Lookup order: host environment first, then a `.env` file next to the compose file.
+- `env_file` now accepts a list of files (a plain string still works) and each path is interpolated; `environment` keys without a value (`KEY` / `KEY: null`) inherit from host/`.env`.
+- Long-syntax volumes support `type: bind` and `type: tmpfs` with `tmpfs.size` and `read_only`.
+- Port mappings support host and container ranges across the shared parser: `cardinal run -p 8000-8010:80`, compose `ports`, and blueprints (`8000-8010:80`, `8000-8010:9000-9002`); invalid specs now fail with a clear error instead of being silently dropped.
+- New `internal/portmap` package with `container.ParsePortMapping` shared by `run`, `up`, and blueprints (14 unit-test cases); `run` rejects anonymous host ports (`-p 9000`) with an actionable message.
+
 ## 2.1.0 (2026-09-20)
 
 ### Rootless storage fallback, pull retry, run --replace

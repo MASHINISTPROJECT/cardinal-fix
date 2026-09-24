@@ -364,7 +364,7 @@ Use `-v` (bind mount) for live file sharing — changes on host are instantly vi
 |------|-------------|
 | `-d` | Detach (background) |
 | `-n` | Container name |
-| `-p` | Port mapping `host:container` |
+| `-p` | Port mapping `host:container[/proto]`; host ranges like `8000-8010:80` are supported |
 | `-v` | Volume mount `src:dst` (add `:ro`/`:rw` for read-only/read-write) |
 | `-e` | Environment variable (repeatable) |
 | `-i` | Interactive (keep stdin) |
@@ -828,7 +828,7 @@ Define containers in a TOML file, start everything with one command.
 ```toml
 [container.web]
 image = "nginx:alpine"
-ports = ["80:80", "443:80"]
+ports = ["80:80", "443:80", "8000-8002:8080"]
 volumes = ["./html:/usr/share/nginx/html"]
 restart = "always"
 
@@ -853,7 +853,7 @@ cardinal down -a         # Remove ALL containers (ignore config)
 |-------|-------------|---------|
 | `image` | Container image (required) | `"nginx:alpine"` |
 | `command` | Startup command | `"python3 app.py"` |
-| `ports` | Port mappings | `["443:80", "3000:3000"]` |
+| `ports` | Port mappings (ranges like `8000-8010:80` supported) | `["443:80", "3000:3000"]` |
 | `volumes` | Volume mounts | `["./data:/data"]` |
 | `env` | Environment variables | `{ KEY = "val" }` |
 | `restart` | Restart policy | `"always"` (default) |

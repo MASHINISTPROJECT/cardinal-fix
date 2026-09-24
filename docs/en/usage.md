@@ -223,7 +223,7 @@ normalized automatically before parsing:
 |---|---|---|
 | `-d` | Detach (run in background) | `-d` |
 | `-n <name>` | Container name | `-n myapp` |
-| `-p H:C[/proto]` | Port mapping `host:container/tcp\|udp` | `-p 8080:80` |
+| `-p H:C[/proto]` | Port mapping `host:container/tcp\|udp`; host ranges accepted (`8000-8010:80`) | `-p 8080:80` |
 | `--ports H:C` | Port mapping (alias for `-p`) | `--ports 8080:80` |
 | `-v S:D` | Volume mount `source:dest` | `-v /data:/data` |
 | `--volume S:D` | Volume mount (alias for `-v`) | `--volume /data:/data` |

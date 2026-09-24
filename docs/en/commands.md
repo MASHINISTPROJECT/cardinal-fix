@@ -173,7 +173,7 @@ Create and start a container. The image may instead be supplied with `--image`, 
 | `--restart-window DURATION` | Window for the crash-loop budget, e.g. `10m`, `1h` |
 | `-e KEY=VALUE` | Repeatable environment variable |
 | `--env-file FILE` | Load `KEY=VALUE` or `export KEY=VALUE` lines |
-| `-p HOST:CONTAINER[/PROTO]` | Port mapping; comma-separated mappings are accepted |
+| `-p HOST:CONTAINER[/PROTO]` | Port mapping; comma-separated mappings and host ranges (`8000-8010:80`) are accepted |
 | `--ports` | Alias for `-p` |
 | `-v SRC:DST[:MODE]` | Volume/bind mapping; modes `:ro`/`:rw`, propagation `:shared`/`:rslave`, `nocopy`, plus `tmpfs:` and `nfs://` specs |
 | `--volume`, `--vol` | Aliases for `-v` |

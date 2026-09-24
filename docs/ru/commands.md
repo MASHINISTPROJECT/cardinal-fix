@@ -173,7 +173,7 @@ cardinal logout registry.example.com
 | `--restart-window DURATION` | Окно бюджета crash-loop, например `10m`, `1h` |
 | `-e KEY=VALUE` | Повторяемая переменная окружения |
 | `--env-file FILE` | Загрузить строки `KEY=VALUE` или `export KEY=VALUE` |
-| `-p HOST:CONTAINER[/PROTO]` | Проброс порта; можно передать несколько через запятую |
+| `-p HOST:CONTAINER[/PROTO]` | Проброс порта; можно передать несколько через запятую и диапазоны хоста (`8000-8010:80`) |
 | `--ports` | Алиас `-p` |
 | `-v SRC:DST[:MODE]` | Bind mount или именованный volume; режимы `:ro`/`:rw`, propagation `:shared`/`:rslave`, `nocopy`, а также спецификации `tmpfs:` и `nfs://` |
 | `--volume`, `--vol` | Алиасы `-v` |
