@@ -127,9 +127,9 @@ networks:
 |---|---|---|
 | `services.<name>.image` | ✅ | |
 | `services.<name>.build` | ✅ | Path or inline build |
-| `services.<name>.ports` | ✅ | `HOST:CONTAINER`, `HOST:CONTAINER/PROTO` |
-| `services.<name>.environment` | ✅ | Map or list |
-| `services.<name>.env_file` | ✅ | |
+| `services.<name>.ports` | ✅ | `HOST:CONTAINER[/PROTO]`, ranges `8000-8010:80` |
+| `services.<name>.environment` | ✅ | Map or list; `KEY` / `KEY: null` inherit from host/.env; values support `${VAR:-default}` |
+| `services.<name>.env_file` | ✅ | One or multiple files; paths support variable interpolation |
 | `services.<name>.volumes` | ✅ | Bind, named, tmpfs |
 | `services.<name>.command` | ✅ | |
 | `services.<name>.working_dir` | ✅ | |
@@ -153,6 +153,30 @@ networks:
 | `services.<name>.deploy` | ✅ | replicas, resources, restart_policy, update_config, placement |
 | `services.<name>.secrets` | ✅ | File-based secret injection (source, target, uid, gid, mode) |
 | `services.<name>.configs` | ✅ | File-based config injection (source, target, uid, gid, mode) |
+
+### Variable interpolation
+
+Values in `image`, `ports`, `volumes`, `environment`, `command`, `entrypoint`,
+`hostname`, `working_dir` and `env_file` paths support compose-style variable
+substitution. Lookup order: host environment first, then a `.env` file next to
+the compose file.
+
+| Syntax | Meaning |
+|---|---|
+| `$VAR`, `${VAR}` | Expand variable (empty if unset) |
+| `${VAR:-default}` | `default` if unset or empty |
+| `${VAR-default}` | `default` only if unset |
+| `$$` | Literal `$` |
+
+```yaml
+services:
+  app:
+    image: "${REGISTRY:-docker.io}/myapp:${TAG:-latest}"
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "${WEB_PORT:-8080}:80"
+```
 
 ### Example: full-stack app
 

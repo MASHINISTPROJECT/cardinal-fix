@@ -482,21 +482,16 @@ func blueprintInstall(args []string) {
 			if p == "" {
 				continue
 			}
-			proto := "tcp"
-			portSpec := p
-			if parts := strings.SplitN(p, "/", 2); len(parts) == 2 {
-				proto = parts[1]
-				portSpec = parts[0]
+			mappings, err := container.ParsePortMapping(p)
+			if err != nil {
+				continue
 			}
-			parts := strings.SplitN(portSpec, ":", 2)
-			if len(parts) == 2 {
-				host, _ := strconv.Atoi(parts[0])
-				cont, _ := strconv.Atoi(parts[1])
-				if host > 0 && cont > 0 {
+			for _, pm := range mappings {
+				if pm.HostPort > 0 && pm.ContainerPort > 0 {
 					portEntries = append(portEntries, portEntry{
-						HostPort:      host,
-						ContainerPort: cont,
-						Protocol:      proto,
+						HostPort:      pm.HostPort,
+						ContainerPort: pm.ContainerPort,
+						Protocol:      pm.Protocol,
 					})
 				}
 			}
