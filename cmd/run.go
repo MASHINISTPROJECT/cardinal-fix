@@ -220,36 +220,19 @@ func Run(args []string) {
 		exitFunc(1)
 	}
 
-	parsePort := func(s string) (container.PortMap, error) {
-		proto := "tcp"
-		if parts := strings.SplitN(s, "/", 2); len(parts) == 2 {
-			proto = parts[1]
-			s = parts[0]
-		}
-		parts := strings.Split(s, ":")
-		if len(parts) != 2 {
-			return container.PortMap{}, fmt.Errorf("invalid port mapping: %s", s)
-		}
-		host, err := strconv.Atoi(parts[0])
-		if err != nil {
-			return container.PortMap{}, fmt.Errorf("invalid host port %q: %w", parts[0], err)
-		}
-		cont, err := strconv.Atoi(parts[1])
-		if err != nil {
-			return container.PortMap{}, fmt.Errorf("invalid container port %q: %w", parts[1], err)
-		}
-		return container.PortMap{HostPort: host, ContainerPort: cont, Protocol: proto}, nil
-	}
-
 	var ports []container.PortMap
 	if *portMapping != "" {
 		for _, p := range strings.Split(*portMapping, ",") {
-			pm, err := parsePort(p)
+			mappings, err := container.ParsePortMapping(p)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 				exitFunc(1)
 			}
-			ports = append(ports, pm)
+			if len(mappings) == 1 && mappings[0].HostPort == 0 {
+				fmt.Fprintf(os.Stderr, "Error: -p %s: anonymous host port is not supported by `run`; use <host>:<container>\n", p)
+				exitFunc(1)
+			}
+			ports = append(ports, mappings...)
 		}
 	}
 

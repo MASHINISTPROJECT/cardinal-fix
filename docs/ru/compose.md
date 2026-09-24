@@ -127,9 +127,9 @@ networks:
 |---|---|---|
 | `services.<name>.image` | ✅ | |
 | `services.<name>.build` | ✅ | Путь или inline-сборка |
-| `services.<name>.ports` | ✅ | `HOST:CONTAINER`, `HOST:CONTAINER/PROTO` |
-| `services.<name>.environment` | ✅ | Map или список |
-| `services.<name>.env_file` | ✅ | |
+| `services.<name>.ports` | ✅ | `HOST:CONTAINER[/PROTO]`, диапазоны `8000-8010:80` |
+| `services.<name>.environment` | ✅ | Map или список; `KEY` / `KEY: null` наследуются из окружения хоста/.env; в значениях работает `${VAR:-default}` |
+| `services.<name>.env_file` | ✅ | Один или несколько файлов; в путях работает подстановка переменных |
 | `services.<name>.volumes` | ✅ | Bind, named, tmpfs |
 | `services.<name>.command` | ✅ | |
 | `services.<name>.working_dir` | ✅ | |
@@ -153,6 +153,30 @@ networks:
 | `services.<name>.deploy` | ✅ | replicas, resources, restart_policy, update_config, placement |
 | `services.<name>.secrets` | ✅ | Инжекция секретов как файлов (source, target, uid, gid, mode) |
 | `services.<name>.configs` | ✅ | Инжекция конфигов как файлов (source, target, uid, gid, mode) |
+
+### Интерполяция переменных
+
+В значениях полей `image`, `ports`, `volumes`, `environment`, `command`,
+`entrypoint`, `hostname`, `working_dir` и в путях `env_file` работает
+compose-подстановка переменных. Порядок поиска: окружение хоста, затем файл
+`.env` рядом с compose-файлом.
+
+| Синтаксис | Значение |
+|---|---|
+| `$VAR`, `${VAR}` | Развернуть переменную (пусто, если не задана) |
+| `${VAR:-default}` | `default`, если переменная не задана или пуста |
+| `${VAR-default}` | `default` только если переменная не задана |
+| `$$` | Литеральный `$` |
+
+```yaml
+services:
+  app:
+    image: "${REGISTRY:-docker.io}/myapp:${TAG:-latest}"
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "${WEB_PORT:-8080}:80"
+```
 
 ### Пример: full-stack приложение
 
