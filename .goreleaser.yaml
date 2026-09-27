@@ -23,7 +23,7 @@ nfpms:
     homepage: https://github.com/animesao/cardinal
     description: Lightweight container runtime
     maintainer: animesao <animesao@users.noreply.github.com>
-    license: MIT
+    license: Apache-2.0
     # We deliberately leave `contents:` empty here, even though it
     # looks tempting to add a `src: ./dist/cardinal_linux_<arch>/cardinal`
     # entry. Looking at goreleaser source (internal/pipe/nfpm/nfpm.go

@@ -39,7 +39,7 @@ pkgs.buildGoModule {
   meta = with pkgs.lib; {
     description = "Lightweight, daemonless, OCI-compatible container runtime.";
     homepage = "https://github.com/animesao/cardinal";
-    license = licenses.mit;
+    license = licenses.asl20;
     platforms = platforms.linux;
     mainProgram = "cardinal";
   };

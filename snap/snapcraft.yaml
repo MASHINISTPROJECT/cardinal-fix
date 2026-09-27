@@ -5,7 +5,7 @@ summary: Lightweight container runtime
 description: |
   cardinal is a lightweight container runtime for Linux.
   It provides container creation, management, and monitoring capabilities.
-license: MIT
+license: Apache-2.0
 confinement: classic
 grade: stable
 

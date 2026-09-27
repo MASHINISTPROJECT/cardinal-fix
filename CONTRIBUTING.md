@@ -47,6 +47,18 @@ Contributions are welcome:
 
 Please do not add a person to this file without their permission. New contributors can be added after a merged contribution or by request.
 
+## Licensing of contributions
+
+Cardinal is licensed under the Apache License, Version 2.0 (see LICENSE).
+By contributing you agree your contribution is made under the same
+Apache-2.0 terms (inbound = outbound, per Section 5 of the license),
+unless a separate written agreement says otherwise.
+
+Note: the project migrated from MIT to Apache-2.0. Past contributions
+remain attributed in Git history and below; obtaining explicit consent
+from all past third-party contributors for the migration is tracked
+as a separate step — do not assume it is complete.
+
 ## Branching model
 
 Permanent branches:

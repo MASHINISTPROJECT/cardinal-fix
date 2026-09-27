@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/version-v2.1.5-blue?style=flat-square">
   <!-- cardinal-version-badge:end -->
   <img src="https://img.shields.io/badge/go-1.26%2B-00ADD8?style=flat-square&logo=go">
-  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square">
+  <img src="https://img.shields.io/badge/license-Apache--2.0-green?style=flat-square">
   <img src="https://img.shields.io/badge/no%20daemon-%E2%9C%93-brightgreen?style=flat-square">
 </p>
 
@@ -26,7 +26,7 @@
 <p align="center">
   <a href="CONTRIBUTING.md">🤝 Contributing</a> ·
   <a href="https://github.com/animesao/cardinal/graphs/contributors">GitHub contributors</a> ·
-  <a href="LICENSE">MIT License</a>
+  <a href="LICENSE">Apache-2.0 License</a>
 </p>
 
 ```bash
@@ -1048,7 +1048,16 @@ for adding new contributors with their permission.
 
 ## License
 
-This project is released under the MIT License. The full license text is in
-[LICENSE](LICENSE).
+This project is released under the Apache License, Version 2.0.
+The full license text is in [LICENSE](LICENSE).
+
+* License: Apache-2.0 — [LICENSE](LICENSE)
+* Attribution: [NOTICE](NOTICE)
+* Brand policy: [TRADEMARKS.md](TRADEMARKS.md)
+* Commercial model: [COMMERCIAL.md](COMMERCIAL.md)
+
+cardinal-wings is a separate project with its own license
+(AGPL-3.0-or-later) — see
+[animesao/cardinal-wings](https://github.com/animesao/cardinal-wings).
 
 Contributor and maintainer attribution: [CONTRIBUTING.md](CONTRIBUTING.md).

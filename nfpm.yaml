@@ -10,7 +10,7 @@ maintainer: animesao <igorerantaev66@gmail.com>
 description: Lightweight container runtime for Linux
 vendor: animesao
 homepage: https://github.com/animesao/cardinal
-license: MIT
+license: Apache-2.0
 
 contents:
   - src: ./cardinal-linux-__BIN_ARCH__
