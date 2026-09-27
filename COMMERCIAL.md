@@ -1,5 +1,10 @@
 # Cardinal — Commercial Model
 
+<!-- cardinal-version:start -->
+**Documentation version:** `2.1.5`
+**Project release:** `v2.1.5`
+<!-- cardinal-version:end -->
+
 ## Cardinal Community
 
 The open-source edition of Cardinal, licensed under the Apache License,
