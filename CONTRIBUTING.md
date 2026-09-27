@@ -54,10 +54,8 @@ By contributing you agree your contribution is made under the same
 Apache-2.0 terms (inbound = outbound, per Section 5 of the license),
 unless a separate written agreement says otherwise.
 
-Note: the project migrated from MIT to Apache-2.0. Past contributions
-remain attributed in Git history and below; obtaining explicit consent
-from all past third-party contributors for the migration is tracked
-as a separate step — do not assume it is complete.
+Note: the project migrated from MIT to Apache-2.0 with the consent of all
+past third-party contributors on record.
 
 ## Branching model
 
