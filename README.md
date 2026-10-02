@@ -747,7 +747,7 @@ cardinal run -d --restart always \
   python:3.11-slim
 ```
 
-Packages install into the overlay and persist across restarts.
+Packages install into the overlay and persist across restarts cardinal.
 
 ---
 
