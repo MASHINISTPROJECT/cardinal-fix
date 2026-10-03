@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -22,6 +23,22 @@ type Summary struct {
 	State   string   `json:"State"`
 	Status  string   `json:"Status"`
 	Command string   `json:"Command"`
+}
+
+// Info is the subset of the serve /info schema the CLI shows.
+type Info struct {
+	Name              string `json:"Name"`
+	ServerVersion     string `json:"ServerVersion"`
+	Containers        int    `json:"Containers"`
+	ContainersRunning int    `json:"ContainersRunning"`
+	ContainersStopped int    `json:"ContainersStopped"`
+	Images            int    `json:"Images"`
+	NCPU              int    `json:"NCPU"`
+	MemTotal          int64  `json:"MemTotal"`
+	KernelVersion     string `json:"KernelVersion"`
+	OperatingSystem   string `json:"OperatingSystem"`
+	Architecture      string `json:"Architecture"`
+	DockerRootDir     string `json:"DockerRootDir"`
 }
 
 // Client points at one `cardinal serve` base URL.
@@ -42,29 +59,41 @@ func NewClient(base, token string) *Client {
 }
 
 func (c *Client) get(ctx context.Context, path string, out interface{}) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.base+path, nil)
+	resp, err := c.doReq(ctx, path)
 	if err != nil {
 		return err
+	}
+	defer resp.Body.Close()
+	if out != nil {
+		return json.NewDecoder(resp.Body).Decode(out)
+	}
+	return nil
+}
+
+// doReq performs an authenticated GET and maps HTTP errors to messages.
+// The caller owns resp.Body.
+func (c *Client) doReq(ctx context.Context, path string) (*http.Response, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.base+path, nil)
+	if err != nil {
+		return nil, err
 	}
 	if c.token != "" {
 		req.Header.Set("Authorization", "Bearer "+c.token)
 	}
 	resp, err := c.hc.Do(req)
 	if err != nil {
-		return fmt.Errorf("GET %s%s: %w (is `cardinal serve` running there?)", c.base, path, err)
+		return nil, fmt.Errorf("GET %s%s: %w (is `cardinal serve` running there?)", c.base, path, err)
 	}
-	defer resp.Body.Close()
 	if resp.StatusCode == http.StatusForbidden {
-		return fmt.Errorf("GET %s%s: status 403 (invalid or missing token — use --token or CARDINAL_TOKEN)", c.base, path)
+		resp.Body.Close()
+		return nil, fmt.Errorf("GET %s%s: status 403 (invalid or missing token — use --token or CARDINAL_TOKEN)", c.base, path)
 	}
 	if resp.StatusCode >= 400 {
 		body, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
-		return fmt.Errorf("GET %s%s: status %d: %s", c.base, path, resp.StatusCode, strings.TrimSpace(string(body)))
+		resp.Body.Close()
+		return nil, fmt.Errorf("GET %s%s: status %d: %s", c.base, path, resp.StatusCode, strings.TrimSpace(string(body)))
 	}
-	if out != nil {
-		return json.NewDecoder(resp.Body).Decode(out)
-	}
-	return nil
+	return resp, nil
 }
 
 // Ping returns nil when the remote serve answers.
@@ -86,4 +115,32 @@ func (c *Client) ListContainers(ctx context.Context, all bool) ([]Summary, error
 		out = []Summary{}
 	}
 	return out, nil
+}
+
+// Info mirrors `cardinal info` (remote subset: host, version, counts).
+func (c *Client) Info(ctx context.Context) (Info, error) {
+	var out Info
+	if err := c.get(ctx, "/info", &out); err != nil {
+		return Info{}, err
+	}
+	return out, nil
+}
+
+// Logs mirrors `cardinal logs --tail N`: tail<=0 returns the whole log.
+// The server ignores follow, so streaming stays a local-only feature.
+func (c *Client) Logs(ctx context.Context, id string, tail int) (string, error) {
+	path := "/containers/" + id + "/logs"
+	if tail > 0 {
+		path += "?tail=" + strconv.Itoa(tail)
+	}
+	resp, err := c.doReq(ctx, path)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 64<<20))
+	if err != nil {
+		return "", err
+	}
+	return string(body), nil
 }

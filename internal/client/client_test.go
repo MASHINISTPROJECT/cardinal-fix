@@ -33,6 +33,27 @@ func testServer(t *testing.T, token string) *httptest.Server {
 			{ID: "abc123def456", Names: []string{"/web"}, Image: "nginx:alpine", State: "running", Status: "running", Command: "nginx -g daemon off;"},
 		})
 	})
+	mux.HandleFunc("/info", func(w http.ResponseWriter, r *http.Request) {
+		if !check(w, r) {
+			return
+		}
+		_ = json.NewEncoder(w).Encode(Info{
+			Name: "srv-01", ServerVersion: "2.1.7-cardinal",
+			Containers: 3, ContainersRunning: 2, ContainersStopped: 1,
+			Images: 5, NCPU: 4, MemTotal: 8 << 30,
+			KernelVersion: "6.8.0", OperatingSystem: "Ubuntu 24.04",
+			Architecture: "x86_64", DockerRootDir: "/root/.cardinal",
+		})
+	})
+	mux.HandleFunc("/containers/web/logs", func(w http.ResponseWriter, r *http.Request) {
+		if !check(w, r) {
+			return
+		}
+		if got := r.URL.Query().Get("tail"); got != "10" {
+			t.Errorf("tail = %q, want 10", got)
+		}
+		w.Write([]byte("line1\nline2\n"))
+	})
 	return httptest.NewServer(mux)
 }
 
@@ -90,5 +111,29 @@ func TestBaseNormalization(t *testing.T) {
 	c = NewClient("https://example.com/", "")
 	if c.base != "https://example.com" {
 		t.Fatalf("base = %q", c.base)
+	}
+}
+
+func TestInfo(t *testing.T) {
+	srv := testServer(t, "")
+	defer srv.Close()
+	info, err := NewClient(srv.URL, "").Info(ctx(t))
+	if err != nil {
+		t.Fatalf("Info: %v", err)
+	}
+	if info.Name != "srv-01" || info.ContainersRunning != 2 || info.Images != 5 {
+		t.Fatalf("info = %+v", info)
+	}
+}
+
+func TestLogs(t *testing.T) {
+	srv := testServer(t, "")
+	defer srv.Close()
+	out, err := NewClient(srv.URL, "").Logs(ctx(t), "web", 10)
+	if err != nil {
+		t.Fatalf("Logs: %v", err)
+	}
+	if out != "line1\nline2\n" {
+		t.Fatalf("logs = %q", out)
 	}
 }

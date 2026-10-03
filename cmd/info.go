@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"runtime"
@@ -10,12 +11,17 @@ import (
 	"strings"
 	"time"
 
+	"cardinal/internal/client"
 	"cardinal/internal/container"
 	"cardinal/internal/image"
 	"cardinal/internal/state"
 )
 
 func Info(args []string) {
+	if host := remoteHostResolved(); host != "" {
+		infoRemote(host)
+		return
+	}
 	containers, _ := container.List(true)
 	var running, stopped int
 	for _, c := range containers {
@@ -59,6 +65,30 @@ func Info(args []string) {
 	fmt.Printf("  %-22s %d\n", "Images:", len(images))
 	fmt.Printf("  %-22s %s\n", "Version:", version)
 	fmt.Printf("  %-22s %s\n", "Rootless:", rootlessMode)
+	fmt.Println(strings.Repeat("─", 50))
+}
+
+// infoRemote prints the remote host summary through `cardinal serve`.
+func infoRemote(host string) {
+	c := client.NewClient(host, remoteTokenResolved())
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	info, err := c.Info(ctx)
+	if err != nil {
+		failf("remote %s: %v", host, err)
+		return
+	}
+	fmt.Println(strings.Repeat("─", 50))
+	fmt.Printf("  %-22s %s (remote %s)\n", "Hostname:", info.Name, host)
+	fmt.Printf("  %-22s %s / %s\n", "System:", info.OperatingSystem, info.Architecture)
+	fmt.Printf("  %-22s %s\n", "Kernel:", info.KernelVersion)
+	fmt.Printf("  %-22s %d cores / %s\n", "CPU/Memory:", info.NCPU, formatBytes(uint64(info.MemTotal)))
+	fmt.Println(strings.Repeat("─", 50))
+	fmt.Printf("  %-22s %s\n", "Data Directory:", info.DockerRootDir)
+	fmt.Printf("  %-22s %d\n", "Running Containers:", info.ContainersRunning)
+	fmt.Printf("  %-22s %d\n", "Stopped Containers:", info.ContainersStopped)
+	fmt.Printf("  %-22s %d\n", "Images:", info.Images)
+	fmt.Printf("  %-22s %s\n", "Version:", info.ServerVersion)
 	fmt.Println(strings.Repeat("─", 50))
 }
 
