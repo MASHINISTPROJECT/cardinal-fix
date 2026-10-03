@@ -23,7 +23,7 @@ func testServer(t *testing.T, token string) *httptest.Server {
 		if !check(w, r) {
 			return
 		}
-		w.Write([]byte("OK"))
+		_, _ = w.Write([]byte("OK"))
 	})
 	mux.HandleFunc("/containers/json", func(w http.ResponseWriter, r *http.Request) {
 		if !check(w, r) {
@@ -52,7 +52,7 @@ func testServer(t *testing.T, token string) *httptest.Server {
 		if got := r.URL.Query().Get("tail"); got != "10" {
 			t.Errorf("tail = %q, want 10", got)
 		}
-		w.Write([]byte("line1\nline2\n"))
+		_, _ = w.Write([]byte("line1\nline2\n"))
 	})
 	return httptest.NewServer(mux)
 }
