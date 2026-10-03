@@ -95,9 +95,12 @@ func register(spec commandSpec) *cobra.Command {
 			}
 			// For DisableFlagParsing commands, cobra leaves global flags
 			// (--json/--quiet/--log-level) in args. Strip them so legacy
-			// flag parsing does not see unknown flag errors.
+			// flag parsing does not see unknown flag errors. Remote flags
+			// (--host/-H/--token) are extracted into package vars on the
+			// way through so remote-capable commands can see them.
 			if c.DisableFlagParsing {
 				args = stripGlobalFlags(args)
+				args = extractRemoteFlags(args)
 			}
 			spec.run(args)
 		},

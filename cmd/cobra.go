@@ -45,10 +45,12 @@ untrusted workloads. Mirrors the docker CLI surface where it is useful,
 and adds tooling for cluster orchestration, FaaS, blueprints and
 Docker-Compose-style up/down/up commands.
 
-GLOBAL FLAGS:
+	GLOBAL FLAGS:
   --log-level string   Log verbosity (debug|info|warn|error) (default "info")
   --json               Emit machine-readable JSON output
   --quiet              Suppress non-essential output
+  --host, -H string    Remote cardinal serve URL for read-only remote mode (or CARDINAL_REMOTE_HOST)
+  --token string       Bearer token for the remote (or CARDINAL_TOKEN)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 IMAGE COMMANDS
@@ -238,6 +240,9 @@ EXAMPLES
 	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", "info", "Log verbosity (debug|info|warn|error)")
 	rootCmd.PersistentFlags().BoolVar(&jsonOut, "json", false, "Emit machine-readable JSON output where supported")
 	rootCmd.PersistentFlags().BoolVar(&quiet, "quiet", false, "Suppress non-essential output")
+	rootCmd.PersistentFlags().StringVar(&remoteHost, "host", "", "Remote `cardinal serve` URL (or CARDINAL_REMOTE_HOST)")
+	rootCmd.PersistentFlags().StringVarP(&remoteHost, "H", "H", "", "Shorthand for --host")
+	rootCmd.PersistentFlags().StringVar(&remoteToken, "token", "", "Bearer token for the remote (or CARDINAL_TOKEN)")
 
 	// All commands are registered via init() in this package so the order
 	// does not depend on file compilation order.
