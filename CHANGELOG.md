@@ -1,7 +1,16 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.1.5`
-**Project release:** `v2.1.5`
+**Documentation version:** `2.2.0`
+**Project release:** `v2.2.0`
 <!-- cardinal-version:end -->
+
+## 2.2.0 (2026-10-03)
+
+### Remote mode: query a remote `cardinal serve` from any machine
+
+- New global flags `--host/-H` and `--token` (env `CARDINAL_REMOTE_HOST`/`CARDINAL_TOKEN`; deliberately not `CARDINAL_HOST`, which already selects the serve bind address).
+- `cardinal ps`, `cardinal info` and `cardinal logs --tail N` work against a remote endpoint through a new `internal/client` package (plain `net/http`, no new dependencies).
+- Remote `logs -f/--previous/--all` fail loudly: the server ignores `follow` and has no previous/rotated logs, so the CLI reports that instead of returning partial data.
+- Legacy `DisableFlagParsing` commands receive the flags via `extractRemoteFlags`; `ps` keeps cobra parsing with the flags bound as persistent flags.
 
 ## 2.1.5 (2026-09-24)
 
