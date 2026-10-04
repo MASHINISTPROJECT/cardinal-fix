@@ -202,7 +202,7 @@ cardinal set — FLAG REFERENCE (see "cardinal set --help")
 EXAMPLES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  cardinal run -d --ram 8g --cpu 2 -p 8080:80 --name web nginx
+  cardinal run -d --ram 8g --cpu 2 -p 8081:80 --name web nginx
   cardinal run -it --rm alpine sh
   cardinal run -d -v /data:/app -e DB_HOST=localhost --network mynet myapp
 

@@ -83,6 +83,7 @@ func StartServerWithTLS(port int, host, certFile, keyFile string) error {
 
 	// Prometheus metrics endpoint
 	mux.Handle("/metrics", metricsHandler())
+	mux.HandleFunc("/events", handleEvents)
 
 	// Raw handler
 	mux.HandleFunc("/", handleRoot)

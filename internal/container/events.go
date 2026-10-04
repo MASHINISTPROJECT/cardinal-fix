@@ -169,3 +169,9 @@ func getEventsSince(since time.Time) []Event {
 	}
 	return result
 }
+
+// EventsSince returns buffered history after since (exported for the API
+// SSE handler; the in-memory ring is capped at 1000 entries).
+func EventsSince(since time.Time) []Event {
+	return getEventsSince(since)
+}

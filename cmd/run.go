@@ -236,6 +236,11 @@ func Run(args []string) {
 		}
 	}
 
+	if len(ports) > 0 {
+		rejectCrossContainerPortConflicts(ports, "", *name)
+		warnHostLocalPortConflicts(ports)
+	}
+
 	var volumes []container.VolumeMount
 	if *volumeMounts != "" {
 		for _, v := range container.SplitVolumeSpecs(*volumeMounts) {

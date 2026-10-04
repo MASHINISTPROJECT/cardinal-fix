@@ -4,11 +4,14 @@ package api
 
 import (
 	"archive/tar"
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -799,7 +802,6 @@ func handleContainerLogs(w http.ResponseWriter, r *http.Request, c *container.Co
 	follow := r.URL.Query().Get("follow") == "1"
 	stdout := r.URL.Query().Get("stdout") != "0"
 	stderr := r.URL.Query().Get("stderr") != "0"
-	_ = follow
 
 	logPath := state.LogPath(c.ID)
 	data, err := os.ReadFile(logPath)
@@ -807,6 +809,7 @@ func handleContainerLogs(w http.ResponseWriter, r *http.Request, c *container.Co
 		writeError(w, 500, fmt.Sprintf("read logs: %v", err))
 		return
 	}
+	sent := int64(len(data))
 
 	// Apply tail
 	if tailStr != "" && tailStr != "all" {
@@ -830,6 +833,49 @@ func handleContainerLogs(w http.ResponseWriter, r *http.Request, c *container.Co
 	w.WriteHeader(200)
 	if _, err := w.Write(data); err != nil {
 		return
+	}
+	if !follow {
+		return
+	}
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		return
+	}
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-r.Context().Done():
+			return
+		case <-ticker.C:
+			fi, err := os.Stat(logPath)
+			if err != nil {
+				sent = 0
+				continue
+			}
+			if fi.Size() < sent {
+				sent = 0 // rotated: fresh log after `start`
+			}
+			if fi.Size() == sent {
+				continue
+			}
+			f, err := os.Open(logPath)
+			if err != nil {
+				sent = 0
+				continue
+			}
+			_, err = f.Seek(sent, io.SeekStart)
+			if err == nil {
+				var n int64
+				n, err = io.Copy(w, f)
+				sent += n
+				flusher.Flush()
+			}
+			_ = f.Close()
+			if err != nil {
+				return
+			}
+		}
 	}
 }
 
@@ -951,11 +997,36 @@ func handleContainerExec(w http.ResponseWriter, r *http.Request, c *container.Co
 		return
 	}
 
-	if err := c.ExecOpts(req.Cmd, req.AttachStdin, req.Tty); err != nil {
-		writeError(w, 500, fmt.Sprintf("exec: %v", err))
+	if req.AttachStdin || req.Tty {
+		writeError(w, 400, "interactive exec requires a TTY; use local `cardinal exec -it` or the wings terminal")
 		return
 	}
-	writeJSON(w, 200, map[string]interface{}{"Id": shortID(c.ID, 12) + "_exec"})
+	var stdout, stderr bytes.Buffer
+	runErr := c.ExecOptsIO(req.Cmd, false, false, nil, &stdout, &stderr)
+	if runErr != nil && execExitCode(runErr) == -1 {
+		writeError(w, 500, fmt.Sprintf("exec: %v", runErr))
+		return
+	}
+	writeJSON(w, 200, map[string]interface{}{
+		"Id":       shortID(c.ID, 12) + "_exec",
+		"Output":   stdout.String(),
+		"Stderr":   stderr.String(),
+		"ExitCode": execExitCode(runErr),
+	})
+}
+
+// execExitCode maps an ExecOptsIO result to a process exit code: nil → 0,
+// *exec.ExitError → its status, anything else → -1 (start failure; the
+// handler already returned 500 for those, so -1 is defensive).
+func execExitCode(err error) int {
+	if err == nil {
+		return 0
+	}
+	var exitErr *exec.ExitError
+	if errors.As(err, &exitErr) {
+		return exitErr.ExitCode()
+	}
+	return -1
 }
 
 func handleContainerWait(w http.ResponseWriter, r *http.Request, c *container.Container) {

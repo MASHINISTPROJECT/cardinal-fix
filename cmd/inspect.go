@@ -3,11 +3,14 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
+	"cardinal/internal/client"
 	"cardinal/internal/container"
 )
 
@@ -24,6 +27,11 @@ func Inspect(args []string) {
 	if len(names) < 1 {
 		fmt.Println("Usage: cardinal inspect [--sensitive] <container> [<container>...]")
 		exitFunc(1)
+	}
+
+	if host := remoteHostResolved(); host != "" {
+		inspectRemote(host, names)
+		return
 	}
 
 	for _, name := range names {
@@ -51,6 +59,24 @@ func Inspect(args []string) {
 			continue
 		}
 		fmt.Println(string(data))
+	}
+}
+
+// inspectRemote prints the serve inspection body as-is per container.
+// Serve returns Docker-style inspect JSON, which differs from the local
+// state dump; --sensitive is accepted but is a no-op remotely (the server
+// schema carries no cardinal secrets).
+func inspectRemote(host string, names []string) {
+	c := client.NewClient(host, remoteTokenResolved())
+	for _, name := range names {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		body, err := c.Inspect(ctx, name)
+		cancel()
+		if err != nil {
+			failf("remote %s: %v", host, err)
+			return
+		}
+		fmt.Println(body)
 	}
 }
 

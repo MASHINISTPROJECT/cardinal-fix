@@ -178,19 +178,64 @@ check_readme_version_badge() {
     return 0
 }
 
-# --- CHANGELOG -------------------------------------------------------------
-# (аналогично: sync_changelog_current_release / check_changelog_current_release)
-# Ключевые правки:
-#   * искать заголовок через index($0, "# Changelog") == 1
-#   * run_awk с проверкой кода
-#   * grep -qF "v$VERSION"
-#   * check_single_pair для маркеров
+# --- CHANGELOG current-release marker --------------------------------------
+# The block between the markers is a canonical one-liner; the human-written
+# history below it stays manual.
+CHANGELOG="$ROOT/CHANGELOG.md"
+
+SYNC_CURRENT_RELEASE_AWK='
+  /<!-- cardinal-current-release:start -->/ {
+    print
+    print "> Current release: **v" version "**. Detailed release notes below are maintained manually."
+    inside=1; next
+  }
+  /<!-- cardinal-current-release:end -->/ { print; inside=0; next }
+  !inside { print }
+'
+
+sync_changelog_current_release() {
+    rel=${CHANGELOG#"$ROOT/"}
+    check_single_pair "$CHANGELOG" \
+        '<!-- cardinal-current-release:start -->' \
+        '<!-- cardinal-current-release:end -->' "$rel" || return 1
+
+    tmp=$(new_tmp "$CHANGELOG")
+    run_awk "$SYNC_CURRENT_RELEASE_AWK" "$CHANGELOG" "$tmp" "$VERSION" || return 1
+
+    if ! cmp -s "$tmp" "$CHANGELOG"; then
+        mv "$tmp" "$CHANGELOG"
+        echo "updated $rel (current-release)"
+    else
+        rm -f "$tmp"
+    fi
+    TMP_PATHS=$(printf '%s' "$TMP_PATHS" | sed "s| *$tmp||")
+}
+
+check_changelog_current_release() {
+    rel=${CHANGELOG#"$ROOT/"}
+    check_single_pair "$CHANGELOG" \
+        '<!-- cardinal-current-release:start -->' \
+        '<!-- cardinal-current-release:end -->' "$rel" || return 1
+    sed -n '/<!-- cardinal-current-release:start -->/,/<!-- cardinal-current-release:end -->/p' "$CHANGELOG" \
+        | grep -qF "**v$VERSION**" \
+        || { echo "Stale current-release marker in $rel (want v$VERSION)" >&2; return 1; }
+    return 0
+}
 
 # --- README release block --------------------------------------------------
-# (аналогично: sync_readme_release_block / check_readme_release_block)
-# Ключевые правки:
-#   * искать заголовок через index($0, "## Changelog") == 1
-#   * grep -qF "v$VERSION"
+# Prose describing the latest release is written by a human at release time,
+# so update mode never rewrites it; --check only requires the block to
+# mention the current version, forcing the prose update to happen.
+check_readme_release_block() {
+    rel=${README#"$ROOT/"}
+    check_single_pair "$README" \
+        '<!-- cardinal-release:start -->' \
+        '<!-- cardinal-release:end -->' "$rel" || return 1
+    sed -n '/<!-- cardinal-release:start -->/,/<!-- cardinal-release:end -->/p' "$README" \
+        | grep -qF "v$VERSION" \
+        || { echo "Stale README release block in $rel (want v$VERSION)" >&2; return 1; }
+    return 0
+}
 
 # --- main ------------------------------------------------------------------
 
@@ -212,13 +257,12 @@ while IFS= read -r path; do
 done < "$FILES"
 
 if [ "$mode" = update ]; then
-    sync_readme_version_badge     || status=1
-    # sync_readme_release_block     || status=1
-    # sync_changelog_current_release || status=1
+    sync_readme_version_badge      || status=1
+    sync_changelog_current_release || status=1
 else
-    check_readme_version_badge      || status=1
-    # check_readme_release_block      || status=1
-    # check_changelog_current_release || status=1
+    check_readme_version_badge       || status=1
+    check_readme_release_block       || status=1
+    check_changelog_current_release  || status=1
 fi
 
 [ "$status" -eq 0 ] || exit "$status"

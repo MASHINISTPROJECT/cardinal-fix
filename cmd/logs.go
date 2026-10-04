@@ -7,6 +7,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"cardinal/internal/client"
@@ -43,12 +45,13 @@ func Logs(args []string) {
 	}
 }
 
-// logsRemote fetches logs through `cardinal serve`. The server supports
-// tail but ignores follow (no streaming), and has no previous/rotated logs,
-// so those flags fail loudly instead of silently returning partial data.
+// logsRemote fetches logs through `cardinal serve`. Follow streams via
+// StreamLogs until the server closes the stream or the user hits Ctrl+C;
+// the server has no previous/rotated logs, so those flags fail loudly
+// instead of silently returning partial data.
 func logsRemote(host, id string, follow bool, tail int, previous, all bool) {
 	if follow {
-		failf("remote %s: live follow is not supported (serve ignores follow); use --tail N", host)
+		logsFollowRemote(host, id, tail)
 		return
 	}
 	if previous || all {
@@ -64,4 +67,18 @@ func logsRemote(host, id string, follow bool, tail int, previous, all bool) {
 		return
 	}
 	fmt.Print(out)
+}
+
+// logsFollowRemote streams `cardinal serve` logs until the server closes
+// the stream or the user hits Ctrl+C.
+func logsFollowRemote(host, id string, tail int) {
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+	c := client.NewClient(host, remoteTokenResolved())
+	if err := c.StreamLogs(ctx, id, tail, os.Stdout); err != nil {
+		if ctx.Err() != nil {
+			return // user interrupt: exit quietly, like local -f
+		}
+		failf("remote %s: %v", host, err)
+	}
 }

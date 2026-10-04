@@ -5,6 +5,8 @@
 package client
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -39,6 +41,42 @@ type Info struct {
 	OperatingSystem   string `json:"OperatingSystem"`
 	Architecture      string `json:"Architecture"`
 	DockerRootDir     string `json:"DockerRootDir"`
+}
+
+type ExecResult struct {
+	ID       string `json:"Id"`
+	Output   string `json:"Output"`
+	Stderr   string `json:"Stderr"`
+	ExitCode int    `json:"ExitCode"`
+}
+
+type TopResult struct {
+	Titles    []string `json:"Titles"`
+	Processes []string `json:"Processes"`
+}
+
+type Stats struct {
+	ContainerID   string  `json:"container_id"`
+	Name          string  `json:"name"`
+	MemoryUsage   uint64  `json:"memory_usage_bytes"`
+	MemoryLimit   uint64  `json:"memory_limit_bytes"`
+	MemoryPercent float64 `json:"memory_percent"`
+	CPUPercent    float64 `json:"cpu_percent"`
+	CPUCount      float64 `json:"cpu_count"`
+	PIDsCurrent   uint64  `json:"pids_current"`
+	IOReadBytes   uint64  `json:"io_read_bytes"`
+	IOWriteBytes  uint64  `json:"io_write_bytes"`
+	DiskUsage     uint64  `json:"disk_usage_bytes"`
+}
+
+type Event struct {
+	Type      string    `json:"type"`
+	ActorID   string    `json:"actor_id"`
+	ActorName string    `json:"actor_name"`
+	ImageName string    `json:"image_name"`
+	ImageTag  string    `json:"image_tag"`
+	Status    string    `json:"status"`
+	Time      time.Time `json:"time"`
 }
 
 // Client points at one `cardinal serve` base URL.
@@ -143,4 +181,189 @@ func (c *Client) Logs(ctx context.Context, id string, tail int) (string, error) 
 		return "", err
 	}
 	return string(body), nil
+}
+
+// StreamLogs streams `cardinal logs -f` output until the server closes the
+// stream or ctx is cancelled.
+func (c *Client) StreamLogs(ctx context.Context, id string, tail int, w io.Writer) error {
+	path := "/containers/" + id + "/logs?follow=1"
+	if tail > 0 {
+		path = "/containers/" + id + "/logs?tail=" + strconv.Itoa(tail) + "&follow=1"
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.base+path, nil)
+	if err != nil {
+		return err
+	}
+	if c.token != "" {
+		req.Header.Set("Authorization", "Bearer "+c.token)
+	}
+	sc := &http.Client{Timeout: 0}
+	resp, err := sc.Do(req)
+	if err != nil {
+		return fmt.Errorf("GET %s%s: %w (is `cardinal serve` running there?)", c.base, path, err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusForbidden {
+		return fmt.Errorf("GET %s%s: status 403 (invalid or missing token — use --token or CARDINAL_TOKEN)", c.base, path)
+	}
+	if resp.StatusCode >= 400 {
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
+		return fmt.Errorf("GET %s%s: status %d: %s", c.base, path, resp.StatusCode, strings.TrimSpace(string(body)))
+	}
+	_, err = io.Copy(w, resp.Body)
+	return err
+}
+
+func (c *Client) doPost(ctx context.Context, path string, body, out interface{}) error {
+	raw, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.base+path, bytes.NewReader(raw))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if c.token != "" {
+		req.Header.Set("Authorization", "Bearer "+c.token)
+	}
+	resp, err := c.hc.Do(req)
+	if err != nil {
+		return fmt.Errorf("POST %s%s: %w (is `cardinal serve` running there?)", c.base, path, err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusForbidden {
+		return fmt.Errorf("POST %s%s: status 403 (invalid or missing token — use --token or CARDINAL_TOKEN)", c.base, path)
+	}
+	if resp.StatusCode >= 400 {
+		msg, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
+		return fmt.Errorf("POST %s%s: status %d: %s", c.base, path, resp.StatusCode, strings.TrimSpace(string(msg)))
+	}
+	if out != nil {
+		return json.NewDecoder(resp.Body).Decode(out)
+	}
+	return nil
+}
+
+func (c *Client) Exec(ctx context.Context, id string, cmd []string) (ExecResult, error) {
+	var out ExecResult
+	if err := c.doPost(ctx, "/containers/"+id+"/exec", map[string]interface{}{"Cmd": cmd}, &out); err != nil {
+		return ExecResult{}, err
+	}
+	return out, nil
+}
+
+func (c *Client) Start(ctx context.Context, id string) error {
+	return c.doPost(ctx, "/containers/"+id+"/start", nil, nil)
+}
+
+func (c *Client) Stop(ctx context.Context, id string) error {
+	return c.doPost(ctx, "/containers/"+id+"/stop", nil, nil)
+}
+
+func (c *Client) Restart(ctx context.Context, id string) error {
+	return c.doPost(ctx, "/containers/"+id+"/restart", nil, nil)
+}
+
+func (c *Client) Top(ctx context.Context, id string) (TopResult, error) {
+	var out TopResult
+	if err := c.get(ctx, "/containers/"+id+"/top", &out); err != nil {
+		return TopResult{}, err
+	}
+	return out, nil
+}
+
+func (c *Client) Stats(ctx context.Context, id string) (Stats, error) {
+	var out Stats
+	if err := c.get(ctx, "/containers/"+id+"/stats?stream=0", &out); err != nil {
+		return Stats{}, err
+	}
+	return out, nil
+}
+
+func (c *Client) Inspect(ctx context.Context, id string) (string, error) {
+	resp, err := c.doReq(ctx, "/containers/"+id+"/json")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := io.ReadAll(io.LimitReader(resp.Body, 64<<20))
+	if err != nil {
+		return "", err
+	}
+	return string(body), nil
+}
+
+func (c *Client) StreamEvents(ctx context.Context) (<-chan Event, <-chan error) {
+	events := make(chan Event)
+	errs := make(chan error, 1)
+	go func() {
+		defer close(events)
+		defer close(errs)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.base+"/events", nil)
+		if err != nil {
+			select {
+			case errs <- err:
+			case <-ctx.Done():
+			}
+			return
+		}
+		req.Header.Set("Accept", "text/event-stream")
+		if c.token != "" {
+			req.Header.Set("Authorization", "Bearer "+c.token)
+		}
+		sc := &http.Client{Timeout: 0}
+		resp, err := sc.Do(req)
+		if err != nil {
+			select {
+			case errs <- fmt.Errorf("GET %s/events: %w (is `cardinal serve` running there?)", c.base, err):
+			case <-ctx.Done():
+			}
+			return
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode == http.StatusForbidden {
+			select {
+			case errs <- fmt.Errorf("GET %s/events: status 403 (invalid or missing token — use --token or CARDINAL_TOKEN)", c.base):
+			case <-ctx.Done():
+			}
+			return
+		}
+		if resp.StatusCode >= 400 {
+			msg, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
+			select {
+			case errs <- fmt.Errorf("GET %s/events: status %d: %s", c.base, resp.StatusCode, strings.TrimSpace(string(msg))):
+			case <-ctx.Done():
+			}
+			return
+		}
+		scanner := bufio.NewScanner(resp.Body)
+		scanner.Buffer(make([]byte, 64*1024), 1024*1024)
+		for scanner.Scan() {
+			line := strings.TrimSpace(scanner.Text())
+			if line == "" {
+				continue
+			}
+			if !strings.HasPrefix(line, "data:") {
+				continue
+			}
+			payload := strings.TrimSpace(strings.TrimPrefix(line, "data:"))
+			var ev Event
+			if err := json.Unmarshal([]byte(payload), &ev); err != nil {
+				continue
+			}
+			select {
+			case events <- ev:
+			case <-ctx.Done():
+				return
+			}
+		}
+		if err := scanner.Err(); err != nil {
+			select {
+			case errs <- err:
+			case <-ctx.Done():
+			}
+		}
+	}()
+	return events, errs
 }
