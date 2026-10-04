@@ -3,6 +3,17 @@
 **Project release:** `v2.2.0`
 <!-- cardinal-version:end -->
 
+## 2.3.0 (2026-10-04)
+
+### Remote mode expansion + host-port conflict UX
+
+- Remote `exec` with captured output: `POST /containers/{id}/exec` now returns `Output`/`Stderr`/`ExitCode` (non-zero exits stay HTTP 200; interactive `-i`/`-t` fails loudly with a wings-terminal hint).
+- Remote `stats` (CLI polls one-shot `?stream=0` every second), `top`, `inspect` (Docker schema), `events` (new SSE `GET /events` with `?since=` replay + live stream), `start`/`stop`/`restart` (including client-side `stop --all`), and streaming `logs -f` (rotation-safe server follow loop).
+- Host-port conflicts: `cardinal run` and `cardinal port add` refuse a host port already mapped by another container (silent DNAT hijack) and warn when the host port is already bound (e.g. cardinal-wings on 8080); README quick-start moved to 8081 with a reserved-ports note.
+- E2E: new smoke steps for duplicate-port rejection, occupied-port warning, and an experimental (non-blocking) bridge forward check.
+- Docs version checks extended: CHANGELOG current-release marker auto-syncs, README release block is check-enforced.
+- `install.ps1`: release pin via `-Version` (default pinned tag) and Go 1.26.6 in the MSI fallback.
+
 ## 2.2.0 (2026-10-03)
 
 ### Remote mode: query a remote `cardinal serve` from any machine
@@ -258,7 +269,7 @@
 - Accept canonical and compatibility JSON field names for startup scripts.
 
 <!-- cardinal-current-release:start -->
-> Current release: **v2.1.5**. Detailed release notes below are maintained manually.
+> Current release: **v2.3.0**. Detailed release notes below are maintained manually.
 <!-- cardinal-current-release:end -->
 
 ## 1.25.3 (2026-08-17)

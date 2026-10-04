@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.2.0`
-**Project release:** `v2.2.0`
+**Documentation version:** `2.3.0`
+**Project release:** `v2.3.0`
 <!-- cardinal-version:end -->
 
 # Installing cardinal — Manual Binary

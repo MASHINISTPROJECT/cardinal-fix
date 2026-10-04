@@ -9,7 +9,7 @@
 
 <p align="center">
   <!-- cardinal-version-badge:start -->
-  <img src="https://img.shields.io/badge/version-v2.2.0-blue?style=flat-square">
+  <img src="https://img.shields.io/badge/version-v2.3.0-blue?style=flat-square">
   <!-- cardinal-version-badge:end -->
   <img src="https://img.shields.io/badge/go-1.26%2B-00ADD8?style=flat-square&logo=go">
   <img src="https://img.shields.io/badge/license-Apache--2.0-green?style=flat-square">
@@ -31,8 +31,8 @@
 
 ```bash
 cardinal run --rm alpine echo "hello from cardinal!"
-cardinal run -d -n web -p 8080:80 nginx:alpine
-curl http://localhost:8080
+cardinal run -d -n web -p 8081:80 nginx:alpine
+curl http://localhost:8081
 ```
 
 ---
@@ -48,11 +48,11 @@ curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/scripts/inst
 
 # Pull & run
 cardinal pull nginx:alpine
-cardinal run -d -n web -p 8080:80 nginx:alpine
+cardinal run -d -n web -p 8081:80 nginx:alpine
 
 # Check
 cardinal ps
-curl http://localhost:8080
+curl http://localhost:8081
 
 # Logs & exec
 cardinal logs web
@@ -67,6 +67,15 @@ cardinal stop web && cardinal rm web
 
 **Requirements:** Linux with `unshare`, `nsenter`, `ip`, `iptables`, `mount`, `pgrep` +
 PID/Mount/Net/UTS/IPC namespaces + overlayfs.
+
+> **Reserved host ports:** `cardinal-wings` (the panel agent) listens on
+> `127.0.0.1:8080` by default and `cardinal serve` on `2375`, so the
+> examples above map nginx to host port `8081`. `cardinal run` warns when
+> the requested host port is already bound on the host, and refuses a port
+> already mapped by another container. If `curl http://localhost:8080`
+> returns `{"error":"missing bearer token"}`, you reached wings — not your
+> container (check with `ss -tlnp | grep 8080` and use another host port,
+> e.g. `-p 8081:80`).
 
 ### Release formats
 
@@ -170,7 +179,7 @@ cardinal run -d --restart always \
 
 ```bash
 cardinal run -d --restart always \
-  -n web -p 8080:80 \
+  -n web -p 8081:80 \
   -v /data/site:/usr/share/nginx/html \
   -network host \
   -image nginx:alpine
@@ -939,11 +948,46 @@ cardinal run -d
 
 ---
 
+## Remote mode
+
+Point the CLI at a remote `cardinal serve` with `--host/-H` and `--token`
+(or `CARDINAL_REMOTE_HOST` / `CARDINAL_TOKEN` env). Besides `ps`, `info` and
+`logs --tail`, remote mode supports `start`, `stop`, `restart`, `logs -f`,
+`exec`, `stats`, `top`, `inspect` and `events`:
+
+```bash
+cardinal --host http://192.168.1.10:2375 start web
+cardinal --host http://192.168.1.10:2375 stop web
+cardinal --host http://192.168.1.10:2375 stop --all
+cardinal --host http://192.168.1.10:2375 restart web
+cardinal --host http://192.168.1.10:2375 logs -f web
+cardinal --host http://192.168.1.10:2375 exec web cat /etc/hostname
+cardinal --host http://192.168.1.10:2375 stats web --no-stream
+cardinal --host http://192.168.1.10:2375 top web
+cardinal --host http://192.168.1.10:2375 inspect web
+cardinal --host http://192.168.1.10:2375 events --since 2026-10-04T00:00:00Z
+```
+
+`stop --all` lists containers remotely and stops each one client-side (continues on error).
+
+Limits:
+
+- No interactive exec: `-i`/`-t` fail loudly (use local `cardinal exec` or the wings terminal).
+- Remote `stats` polls `?stream=0` once per second (no server-side stream).
+- Remote `inspect` returns Docker-schema JSON from `serve`, which differs from the local state dump; `--sensitive` is a no-op remotely.
+- Remote `events --since` filters client-side from subscribe time.
+- `logs --previous`/`--all` stay local-only.
+- Remote `logs -f` survives log rotation (offset reset on fresh `start`) but ends if the container is removed.
+
+---
+
 ## Changelog
 
 <!-- cardinal-release:start -->
-**v2.2.0** — Read-only remote mode: `cardinal --host URL [--token]` queries a remote `cardinal serve` for `ps`, `info` and `logs --tail` (new `internal/client`, `CARDINAL_REMOTE_HOST`/`CARDINAL_TOKEN` env).
+**v2.3.0** — Remote mode expansion: `exec` (captured output), `stats`, `top`, `inspect`, `events` (SSE), `start`/`stop`/`restart` and streaming `logs -f` via `cardinal --host URL [--token]`; host-port conflict warnings in `run`/`port add`.
 <!-- cardinal-release:end -->
+
+**v2.2.0** — Read-only remote mode: `cardinal --host URL [--token]` queries a remote `cardinal serve` for `ps`, `info` and `logs --tail` (new `internal/client`, `CARDINAL_REMOTE_HOST`/`CARDINAL_TOKEN` env).
 
 **v1.24.0** — Major security hardening: seccomp profile (blocks 30+ dangerous syscalls), AppArmor profile, device restrictions (/dev/shm, /dev/mqueue, /proc/sys, /sys read-only), network segmentation (`--isolated`), backup encryption (AES-256-GCM with `--encrypt`), audit logging for container lifecycle events, new CLI flags (`--seccomp-profile`, `--apparmor-profile`, `--isolated`, `--encrypted-backup`, `--audit-log`).
 
