@@ -14,7 +14,7 @@ DESCRIPTION="Lightweight, daemonless, OCI-compatible container runtime"
 HOMEPAGE="https://github.com/animesao/cardinal"
 SRC_URI="https://github.com/animesao/cardinal/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
-LICENSE="MIT"
+LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~amd64 ~arm64"
 

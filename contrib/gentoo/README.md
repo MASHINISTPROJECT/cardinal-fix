@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.1.0`
-**Project release:** `v2.1.0`
+**Documentation version:** `2.1.5`
+**Project release:** `v2.1.5`
 <!-- cardinal-version:end -->
 
 # Gentoo packaging for `cardinal`
@@ -67,7 +67,7 @@ REQUIRED before sending the PR:
 |---|---|
 | `DESCRIPTION` | lightweight, daemonless, OCI-compatible container runtime |
 | `HOMEPAGE` | https://github.com/animesao/cardinal |
-| `LICENSE` | MIT (must match upstream LICENSE file) |
+| `LICENSE` | Apache-2.0 (must match upstream LICENSE file) |
 | `SLOT` | 0 |
 | `KEYWORDS` | start with `~amd64`, add more as testing progresses |
 | `RESTRICT` | `test` (sandbox has no namespaces) |

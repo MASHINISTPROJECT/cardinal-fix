@@ -6,7 +6,27 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"cardinal/internal/portmap"
 )
+
+// ParsePortMapping expands a port spec ("8080:80", "8000-8010:80/udp",
+// "8000-8010:8000-8010") into a list of PortMaps.
+func ParsePortMapping(s string) ([]PortMap, error) {
+	mappings, err := portmap.Parse(s)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]PortMap, 0, len(mappings))
+	for _, m := range mappings {
+		out = append(out, PortMap{
+			HostPort:      m.HostPort,
+			ContainerPort: m.ContainerPort,
+			Protocol:      m.Protocol,
+		})
+	}
+	return out, nil
+}
 
 func ParseDiskString(s string) (int64, error) {
 	return ParseMemoryString(s)

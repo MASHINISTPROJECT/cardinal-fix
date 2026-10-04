@@ -3,11 +3,16 @@
 package cmd
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
+	"strings"
+	"syscall"
 	"time"
 
+	"cardinal/internal/client"
 	"cardinal/internal/container"
 )
 
@@ -17,6 +22,10 @@ func Stats(args []string) {
 	mustParse(fs, args, "stats")
 
 	remainder := fs.Args()
+	if host := remoteHostResolved(); host != "" {
+		statsRemote(host, remainder, *noStream)
+		return
+	}
 	if len(remainder) == 0 {
 		// Show all running containers
 		containers, err := container.List(false)
@@ -80,5 +89,89 @@ func showStatsLoop(containers []*container.Container, noStream bool) {
 			break
 		}
 		time.Sleep(1 * time.Second)
+	}
+}
+
+// statsRemote polls the one-shot stats endpoint through `cardinal serve`
+// (the server has no usable remote stream, so the CLI polls ?stream=0
+// every second instead of subscribing). The no-arg form lists containers
+// remotely; with --no-stream it prints a single snapshot and returns,
+// otherwise it polls until SIGINT.
+func statsRemote(host string, names []string, noStream bool) {
+	c := client.NewClient(host, remoteTokenResolved())
+	if len(names) == 0 {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		list, err := c.ListContainers(ctx, false)
+		cancel()
+		if err != nil {
+			failf("remote %s: %v", host, err)
+			return
+		}
+		for _, item := range list {
+			name := ""
+			if len(item.Names) > 0 {
+				name = strings.TrimPrefix(item.Names[0], "/")
+			}
+			if name == "" {
+				name = item.ID
+			}
+			names = append(names, name)
+		}
+		if len(names) == 0 {
+			fmt.Println("No running containers")
+			return
+		}
+	}
+
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+
+	prevSnapshots := make(map[string]*container.StatsSnapshot)
+	first := true
+	for {
+		showHeader := true
+		for _, name := range names {
+			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			st, err := c.Stats(ctx, name)
+			cancel()
+			if err != nil {
+				if first {
+					failf("remote %s: %v", host, err)
+					return
+				}
+				continue
+			}
+			s := &container.ContainerStats{
+				ContainerID:   st.ContainerID,
+				Name:          st.Name,
+				MemoryUsage:   st.MemoryUsage,
+				MemoryLimit:   st.MemoryLimit,
+				MemoryPercent: st.MemoryPercent,
+				CPUCount:      st.CPUCount,
+				PIDsCurrent:   st.PIDsCurrent,
+				IOReadBytes:   st.IOReadBytes,
+				IOWriteBytes:  st.IOWriteBytes,
+				DiskUsage:     st.DiskUsage,
+				Timestamp:     time.Now().UnixNano(),
+			}
+			prev := prevSnapshots[s.ContainerID]
+			container.PrintContainerStats(s, prev, showHeader)
+			prevSnapshots[s.ContainerID] = &container.StatsSnapshot{
+				CPUUsage:  s.CPUUsage,
+				Timestamp: s.Timestamp,
+			}
+			showHeader = false
+		}
+
+		first = false
+		if noStream {
+			return
+		}
+		select {
+		case <-sig:
+			fmt.Fprintf(os.Stderr, "\n")
+			return
+		case <-time.After(1 * time.Second):
+		}
 	}
 }

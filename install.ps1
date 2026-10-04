@@ -1,6 +1,7 @@
 param(
     [string]$InstallDir = "$env:USERPROFILE\.cardinal\bin",
-    [string]$GoVersion = "1.22.5",
+    [string]$GoVersion = "1.26.6",
+    [string]$Version = "v2.3.0",
     [switch]$NoPath
 )
 
@@ -74,8 +75,8 @@ if (-not (Get-Command go -ErrorAction SilentlyContinue)) {
 # ---- Clone repo ----
 $TmpDir = "$env:TEMP\cardinal-build"
 if (Test-Path $TmpDir) { Remove-Item -Recurse -Force $TmpDir }
-Write-Host "[cardinal] Cloning cardinal repository..."
-git clone --depth 1 "https://github.com/animesao/cardinal.git" $TmpDir 2>&1 | Out-Null
+Write-Host "[cardinal] Cloning cardinal repository ($Version)..."
+git clone --depth 1 --branch $Version "https://github.com/animesao/cardinal.git" $TmpDir 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[cardinal] Git clone failed!" -ForegroundColor Red
     exit 1

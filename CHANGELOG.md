@@ -1,7 +1,62 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.1.0`
-**Project release:** `v2.1.0`
+**Documentation version:** `2.2.0`
+**Project release:** `v2.2.0`
 <!-- cardinal-version:end -->
+
+## 2.3.0 (2026-10-04)
+
+### Remote mode expansion + host-port conflict UX
+
+- Remote `exec` with captured output: `POST /containers/{id}/exec` now returns `Output`/`Stderr`/`ExitCode` (non-zero exits stay HTTP 200; interactive `-i`/`-t` fails loudly with a wings-terminal hint).
+- Remote `stats` (CLI polls one-shot `?stream=0` every second), `top`, `inspect` (Docker schema), `events` (new SSE `GET /events` with `?since=` replay + live stream), `start`/`stop`/`restart` (including client-side `stop --all`), and streaming `logs -f` (rotation-safe server follow loop).
+- Host-port conflicts: `cardinal run` and `cardinal port add` refuse a host port already mapped by another container (silent DNAT hijack) and warn when the host port is already bound (e.g. cardinal-wings on 8080); README quick-start moved to 8081 with a reserved-ports note.
+- E2E: new smoke steps for duplicate-port rejection, occupied-port warning, and an experimental (non-blocking) bridge forward check.
+- Docs version checks extended: CHANGELOG current-release marker auto-syncs, README release block is check-enforced.
+- `install.ps1`: release pin via `-Version` (default pinned tag) and Go 1.26.6 in the MSI fallback.
+
+## 2.2.0 (2026-10-03)
+
+### Remote mode: query a remote `cardinal serve` from any machine
+
+- New global flags `--host/-H` and `--token` (env `CARDINAL_REMOTE_HOST`/`CARDINAL_TOKEN`; deliberately not `CARDINAL_HOST`, which already selects the serve bind address).
+- `cardinal ps`, `cardinal info` and `cardinal logs --tail N` work against a remote endpoint through a new `internal/client` package (plain `net/http`, no new dependencies).
+- Remote `logs -f/--previous/--all` fail loudly: the server ignores `follow` and has no previous/rotated logs, so the CLI reports that instead of returning partial data.
+- Legacy `DisableFlagParsing` commands receive the flags via `extractRemoteFlags`; `ps` keeps cobra parsing with the flags bound as persistent flags.
+
+## 2.1.5 (2026-09-24)
+
+### Compose: variable interpolation, multi env_file, port ranges
+
+- Compose-style variable substitution in `image`, `ports`, `volumes`, `environment`, `command`, `entrypoint`, `hostname`, `working_dir`, and `env_file` paths — `$VAR`, `${VAR}`, `${VAR:-default}`, `${VAR-default}`, `$$`. Lookup order: host environment first, then a `.env` file next to the compose file.
+- `env_file` now accepts a list of files (a plain string still works) and each path is interpolated; `environment` keys without a value (`KEY` / `KEY: null`) inherit from host/`.env`.
+- Long-syntax volumes support `type: bind` and `type: tmpfs` with `tmpfs.size` and `read_only`.
+- Port mappings support host and container ranges across the shared parser: `cardinal run -p 8000-8010:80`, compose `ports`, and blueprints (`8000-8010:80`, `8000-8010:9000-9002`); invalid specs now fail with a clear error instead of being silently dropped.
+- New `internal/portmap` package with `container.ParsePortMapping` shared by `run`, `up`, and blueprints (14 unit-test cases); `run` rejects anonymous host ports (`-p 9000`) with an actionable message.
+
+## 2.1.4 (2026-09-21)
+
+### Re-release on green build
+
+- Same code as 2.1.3, fresh tag so consumers can pin a green build of the release pipeline.
+
+## 2.1.3 (2026-09-21)
+
+### Contributors and cleanup
+
+- README contributors section, `.env.example` removed, `develop` merge.
+
+## 2.1.2 (2026-09-21)
+
+### Uninstall and deps
+
+- `uninstall.sh` rewrite with safer cleanup, `golang.org/x/sys` bump, dependabot merge.
+
+## 2.1.1 (2026-09-21)
+
+### Installer and pull progress
+
+- Linux installer rework: mirror-first downloads with timeouts and IPv4 fallback.
+- Pull progress bar fix; `.gitignore` covers build artifacts.
 
 ## 2.1.0 (2026-09-20)
 
@@ -214,7 +269,7 @@
 - Accept canonical and compatibility JSON field names for startup scripts.
 
 <!-- cardinal-current-release:start -->
-> Current release: **v2.1.0**. Detailed release notes below are maintained manually.
+> Current release: **v2.3.0**. Detailed release notes below are maintained manually.
 <!-- cardinal-current-release:end -->
 
 ## 1.25.3 (2026-08-17)

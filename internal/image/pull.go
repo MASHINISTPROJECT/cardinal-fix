@@ -19,11 +19,9 @@ import (
 )
 
 const (
-	registryURL = "https://registry-1.docker.io"
-	authURL     = "https://auth.docker.io/token"
-	authService = "registry.docker.io"
-	// dockerHubHost is the registry host used when a repository reference has
-	// no explicit registry prefix (e.g. "ubuntu" or "itzg/minecraft-server").
+	registryURL   = "https://registry-1.docker.io"
+	authURL       = "https://auth.docker.io/token"
+	authService   = "registry.docker.io"
 	dockerHubHost = "registry-1.docker.io"
 )
 
@@ -193,7 +191,7 @@ func PullWithPlatformContext(ctx context.Context, ref, platformOS, platformArch 
 	for i, layer := range manifest.Layers {
 		label := fmt.Sprintf(" %s", shortDigest(layer.Digest))
 		if isTerminal {
-			fmt.Printf("  %s\r", label)
+			fmt.Printf("  %s\033[K\r", label)
 		} else {
 			fmt.Printf("  Layer %d/%d: %s\n", i+1, len(manifest.Layers), shortDigest(layer.Digest))
 		}
@@ -202,32 +200,32 @@ func PullWithPlatformContext(ctx context.Context, ref, platformOS, platformArch 
 		if err := verifyFileDigest(cachePath, layer.Digest); err != nil {
 			percentFn := func(pct int) {
 				if isTerminal {
-					fmt.Printf("  %s [%s%s] %d%%\r", label, bar(pct, 30), bar(100-pct, 30), pct)
+					fmt.Printf("  %s [%s] %d%%\033[K\r", label, bar(pct, 30), pct)
 				}
 			}
 			if err := downloadBlobToFile(name, layer.Digest, token, cachePath, percentFn); err != nil {
 				if isTerminal {
-					fmt.Println()
+					fmt.Print("\033[K\n")
 				}
 				return nil, fmt.Errorf("layer %d: %w", i, err)
 			}
 			if isTerminal {
-				fmt.Printf("  %s [%s] 100%%\n", label, bar(100, 30))
+				fmt.Printf("  %s [%s] 100%%\033[K\n", label, bar(100, 30))
 			}
 		}
 
 		if isTerminal {
-			fmt.Printf("  %s extracting...\r", label)
+			fmt.Printf("  %s extracting...\033[K\r", label)
 		}
 		if err := extractLayer(cachePath, rootfsDir); err != nil {
 			if isTerminal {
-				fmt.Println()
+				fmt.Print("\033[K\n")
 			}
 			return nil, fmt.Errorf("extract layer %d: %w", i, err)
 		}
 	}
 	if isTerminal {
-		fmt.Print(strings.Repeat(" ", 60) + "\r")
+		fmt.Print(strings.Repeat(" ", 80) + "\r")
 	}
 
 	if err := saveConfig(state.ImageDir(name, tag), configData); err != nil {
@@ -546,20 +544,22 @@ func isTerminalOutput() bool {
 	return (fi.Mode() & os.ModeCharDevice) != 0
 }
 
+// bar returns a progress-bar fragment of the given width, filled proportionally
+// to pct. The remainder is padded with spaces so the rendered line keeps a
+// stable length across frames — required for ANSI in-place redraws to look
+// correct (see PullWithPlatformContext).
 func bar(pct, width int) string {
+	if pct < 0 {
+		pct = 0
+	}
+	if pct > 100 {
+		pct = 100
+	}
 	filled := pct * width / 100
 	if filled > width {
 		filled = width
 	}
-	b := make([]byte, width)
-	for i := 0; i < width; i++ {
-		if i < filled {
-			b[i] = '='
-		} else {
-			b[i] = ' '
-		}
-	}
-	return string(b)
+	return strings.Repeat("=", filled) + strings.Repeat(" ", width-filled)
 }
 
 // Context-aware HTTP helpers that accept context for cancellation support.

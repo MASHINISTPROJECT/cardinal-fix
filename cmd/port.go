@@ -116,6 +116,10 @@ func portAdd(args []string) {
 		exitFunc(1)
 	}
 
+	self := []container.PortMap{{HostPort: hostPort, ContainerPort: containerPort, Protocol: protocol}}
+	rejectCrossContainerPortConflicts(self, c.ID, c.Name)
+	warnHostLocalPortConflicts(self)
+
 	if err := c.AddPort(hostPort, containerPort, protocol); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		exitFunc(1)

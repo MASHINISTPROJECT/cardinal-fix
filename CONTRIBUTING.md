@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.1.0`
-**Project release:** `v2.1.0`
+**Documentation version:** `2.3.0`
+**Project release:** `v2.3.0`
 <!-- cardinal-version:end -->
 
 <p align="center">
@@ -46,6 +46,16 @@ Contributions are welcome:
 6. Open a pull request with a clear description of the change and its verification.
 
 Please do not add a person to this file without their permission. New contributors can be added after a merged contribution or by request.
+
+## Licensing of contributions
+
+Cardinal is licensed under the Apache License, Version 2.0 (see LICENSE).
+By contributing you agree your contribution is made under the same
+Apache-2.0 terms (inbound = outbound, per Section 5 of the license),
+unless a separate written agreement says otherwise.
+
+Note: the project migrated from MIT to Apache-2.0 with the consent of all
+past third-party contributors on record.
 
 ## Branching model
 

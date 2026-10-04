@@ -22,3 +22,7 @@ artifacts/
 *.swp
 *.log
 *.tmp
+
+# Release artifacts
+cardinal_*_linux_*.tar.gz
+cardinal_*_checksums.txt

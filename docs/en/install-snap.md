@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.1.0`
-**Project release:** `v2.1.0`
+**Documentation version:** `2.3.0`
+**Project release:** `v2.3.0`
 <!-- cardinal-version:end -->
 
 # Installing cardinal via Snap

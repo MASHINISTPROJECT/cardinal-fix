@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.1.0`
-**Project release:** `v2.1.0`
+**Documentation version:** `2.2.0`
+**Project release:** `v2.2.0`
 <!-- cardinal-version:end -->
 
 <p align="center">
@@ -9,10 +9,10 @@
 
 <p align="center">
   <!-- cardinal-version-badge:start -->
-  <img src="https://img.shields.io/badge/version-v2.1.0-blue?style=flat-square">
+  <img src="https://img.shields.io/badge/version-v2.3.0-blue?style=flat-square">
   <!-- cardinal-version-badge:end -->
   <img src="https://img.shields.io/badge/go-1.26%2B-00ADD8?style=flat-square&logo=go">
-  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square">
+  <img src="https://img.shields.io/badge/license-Apache--2.0-green?style=flat-square">
   <img src="https://img.shields.io/badge/no%20daemon-%E2%9C%93-brightgreen?style=flat-square">
 </p>
 
@@ -26,13 +26,13 @@
 <p align="center">
   <a href="CONTRIBUTING.md">🤝 Contributing</a> ·
   <a href="https://github.com/animesao/cardinal/graphs/contributors">GitHub contributors</a> ·
-  <a href="LICENSE">MIT License</a>
+  <a href="LICENSE">Apache-2.0 License</a>
 </p>
 
 ```bash
 cardinal run --rm alpine echo "hello from cardinal!"
-cardinal run -d -n web -p 8080:80 nginx:alpine
-curl http://localhost:8080
+cardinal run -d -n web -p 8081:80 nginx:alpine
+curl http://localhost:8081
 ```
 
 ---
@@ -48,11 +48,11 @@ curl -fsSL https://raw.githubusercontent.com/animesao/cardinal/main/scripts/inst
 
 # Pull & run
 cardinal pull nginx:alpine
-cardinal run -d -n web -p 8080:80 nginx:alpine
+cardinal run -d -n web -p 8081:80 nginx:alpine
 
 # Check
 cardinal ps
-curl http://localhost:8080
+curl http://localhost:8081
 
 # Logs & exec
 cardinal logs web
@@ -67,6 +67,15 @@ cardinal stop web && cardinal rm web
 
 **Requirements:** Linux with `unshare`, `nsenter`, `ip`, `iptables`, `mount`, `pgrep` +
 PID/Mount/Net/UTS/IPC namespaces + overlayfs.
+
+> **Reserved host ports:** `cardinal-wings` (the panel agent) listens on
+> `127.0.0.1:8080` by default and `cardinal serve` on `2375`, so the
+> examples above map nginx to host port `8081`. `cardinal run` warns when
+> the requested host port is already bound on the host, and refuses a port
+> already mapped by another container. If `curl http://localhost:8080`
+> returns `{"error":"missing bearer token"}`, you reached wings — not your
+> container (check with `ss -tlnp | grep 8080` and use another host port,
+> e.g. `-p 8081:80`).
 
 ### Release formats
 
@@ -170,7 +179,7 @@ cardinal run -d --restart always \
 
 ```bash
 cardinal run -d --restart always \
-  -n web -p 8080:80 \
+  -n web -p 8081:80 \
   -v /data/site:/usr/share/nginx/html \
   -network host \
   -image nginx:alpine
@@ -364,7 +373,7 @@ Use `-v` (bind mount) for live file sharing — changes on host are instantly vi
 |------|-------------|
 | `-d` | Detach (background) |
 | `-n` | Container name |
-| `-p` | Port mapping `host:container` |
+| `-p` | Port mapping `host:container[/proto]`; host ranges like `8000-8010:80` are supported |
 | `-v` | Volume mount `src:dst` (add `:ro`/`:rw` for read-only/read-write) |
 | `-e` | Environment variable (repeatable) |
 | `-i` | Interactive (keep stdin) |
@@ -747,7 +756,7 @@ cardinal run -d --restart always \
   python:3.11-slim
 ```
 
-Packages install into the overlay and persist across restarts.
+Packages install into the overlay and persist across restarts cardinal.
 
 ---
 
@@ -756,8 +765,8 @@ Packages install into the overlay and persist across restarts.
 [cardinal-wings](https://github.com/animesao/cardinal-wings) is a REST API daemon for managing containers remotely. It runs as a systemd service and allows frontends (like cardinal-panel) to control containers over HTTP.
 
 ```bash
-# Install (site mirror — no GitHub needed; prints URL + API token for the panel)
-curl -fsSL https://cardinal.spcfy.eu/downloads/install-wings.sh -o /tmp/install-wings.sh
+# Install (GitHub Releases; prints URL + API token for the panel)
+curl -fsSL https://github.com/animesao/cardinal-wings/releases/latest/download/install.sh -o /tmp/install-wings.sh
 sudo bash /tmp/install-wings.sh
 
 # Start
@@ -828,7 +837,7 @@ Define containers in a TOML file, start everything with one command.
 ```toml
 [container.web]
 image = "nginx:alpine"
-ports = ["80:80", "443:80"]
+ports = ["80:80", "443:80", "8000-8002:8080"]
 volumes = ["./html:/usr/share/nginx/html"]
 restart = "always"
 
@@ -853,7 +862,7 @@ cardinal down -a         # Remove ALL containers (ignore config)
 |-------|-------------|---------|
 | `image` | Container image (required) | `"nginx:alpine"` |
 | `command` | Startup command | `"python3 app.py"` |
-| `ports` | Port mappings | `["443:80", "3000:3000"]` |
+| `ports` | Port mappings (ranges like `8000-8010:80` supported) | `["443:80", "3000:3000"]` |
 | `volumes` | Volume mounts | `["./data:/data"]` |
 | `env` | Environment variables | `{ KEY = "val" }` |
 | `restart` | Restart policy | `"always"` (default) |
@@ -939,11 +948,46 @@ cardinal run -d
 
 ---
 
+## Remote mode
+
+Point the CLI at a remote `cardinal serve` with `--host/-H` and `--token`
+(or `CARDINAL_REMOTE_HOST` / `CARDINAL_TOKEN` env). Besides `ps`, `info` and
+`logs --tail`, remote mode supports `start`, `stop`, `restart`, `logs -f`,
+`exec`, `stats`, `top`, `inspect` and `events`:
+
+```bash
+cardinal --host http://192.168.1.10:2375 start web
+cardinal --host http://192.168.1.10:2375 stop web
+cardinal --host http://192.168.1.10:2375 stop --all
+cardinal --host http://192.168.1.10:2375 restart web
+cardinal --host http://192.168.1.10:2375 logs -f web
+cardinal --host http://192.168.1.10:2375 exec web cat /etc/hostname
+cardinal --host http://192.168.1.10:2375 stats web --no-stream
+cardinal --host http://192.168.1.10:2375 top web
+cardinal --host http://192.168.1.10:2375 inspect web
+cardinal --host http://192.168.1.10:2375 events --since 2026-10-04T00:00:00Z
+```
+
+`stop --all` lists containers remotely and stops each one client-side (continues on error).
+
+Limits:
+
+- No interactive exec: `-i`/`-t` fail loudly (use local `cardinal exec` or the wings terminal).
+- Remote `stats` polls `?stream=0` once per second (no server-side stream).
+- Remote `inspect` returns Docker-schema JSON from `serve`, which differs from the local state dump; `--sensitive` is a no-op remotely.
+- Remote `events --since` filters client-side from subscribe time.
+- `logs --previous`/`--all` stay local-only.
+- Remote `logs -f` survives log rotation (offset reset on fresh `start`) but ends if the container is removed.
+
+---
+
 ## Changelog
 
 <!-- cardinal-release:start -->
-**v2.1.0** — Documentation, installation, AppImage, update, and release automation are synchronized from the root `VERSION` file.
+**v2.3.0** — Remote mode expansion: `exec` (captured output), `stats`, `top`, `inspect`, `events` (SSE), `start`/`stop`/`restart` and streaming `logs -f` via `cardinal --host URL [--token]`; host-port conflict warnings in `run`/`port add`.
 <!-- cardinal-release:end -->
+
+**v2.2.0** — Read-only remote mode: `cardinal --host URL [--token]` queries a remote `cardinal serve` for `ps`, `info` and `logs --tail` (new `internal/client`, `CARDINAL_REMOTE_HOST`/`CARDINAL_TOKEN` env).
 
 **v1.24.0** — Major security hardening: seccomp profile (blocks 30+ dangerous syscalls), AppArmor profile, device restrictions (/dev/shm, /dev/mqueue, /proc/sys, /sys read-only), network segmentation (`--isolated`), backup encryption (AES-256-GCM with `--encrypt`), audit logging for container lifecycle events, new CLI flags (`--seccomp-profile`, `--apparmor-profile`, `--isolated`, `--encrypted-backup`, `--audit-log`).
 
@@ -1048,7 +1092,16 @@ for adding new contributors with their permission.
 
 ## License
 
-This project is released under the MIT License. The full license text is in
-[LICENSE](LICENSE).
+This project is released under the Apache License, Version 2.0.
+The full license text is in [LICENSE](LICENSE).
+
+* License: Apache-2.0 — [LICENSE](LICENSE)
+* Attribution: [NOTICE](NOTICE)
+* Brand policy: [TRADEMARKS.md](TRADEMARKS.md)
+* Commercial model: [COMMERCIAL.md](COMMERCIAL.md)
+
+cardinal-wings is a separate project with its own license
+(AGPL-3.0-or-later) — see
+[animesao/cardinal-wings](https://github.com/animesao/cardinal-wings).
 
 Contributor and maintainer attribution: [CONTRIBUTING.md](CONTRIBUTING.md).

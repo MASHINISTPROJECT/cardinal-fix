@@ -3,7 +3,7 @@ Version:        1.23.2
 Release:        1%{?dist}
 Summary:        Lightweight container runtime for Linux
 
-License:        MIT
+License:        Apache-2.0
 URL:            https://github.com/animesao/cardinal
 Source0:        %{url}/releases/download/v%{version}/cardinal-linux-%{_arch}
 

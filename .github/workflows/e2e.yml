@@ -167,6 +167,94 @@ jobs:
           echo "OK: doctor + pull + run-all-rm"
           cat "$log"
 
+      # ---------------- Smoke 4: duplicate host port ---------------------------
+      # A second container mapping an already-mapped host port must be
+      # rejected with an actionable error: otherwise its iptables DNAT rule
+      # silently steals traffic from the first container
+      # (network.AddPortForwarding → removeExistingDNAT). Pure state check,
+      # no bridge traffic needed — --network none keeps this deterministic.
+      - name: Smoke 4 — duplicate host port is rejected
+        run: |
+          log="$DIAG_DIR/04-port-conflict.log"
+          set -Euo pipefail
+          sudo -E ./cardinal-e2e run -d -n e2e-port-a --network none -p 18081:80 alpine:latest sleep 300 >"$log" 2>&1
+          if sudo -E ./cardinal-e2e run -d -n e2e-port-b --network none -p 18081:80 alpine:latest sleep 300 >>"$log" 2>&1; then
+            echo "::error::second run with duplicate host port 18081 unexpectedly succeeded (see $log)"
+            cat "$log"
+            sudo -E ./cardinal-e2e rm -f e2e-port-a >>"$log" 2>&1 || true
+            sudo -E ./cardinal-e2e rm -f e2e-port-b >>"$log" 2>&1 || true
+            exit 1
+          fi
+          if ! grep -F "already mapped" "$log" >/dev/null; then
+            echo "::error::duplicate host port rejected without the 'already mapped' hint (see $log)"
+            cat "$log"
+            sudo -E ./cardinal-e2e rm -f e2e-port-a >>"$log" 2>&1 || true
+            exit 1
+          fi
+          sudo -E ./cardinal-e2e rm -f e2e-port-a >>"$log" 2>&1 || true
+          sudo -E ./cardinal-e2e rm -f e2e-port-b >>"$log" 2>&1 || true
+          echo "OK: duplicate host port rejected with actionable error"
+          cat "$log"
+
+      # ---------------- Smoke 5: occupied host port warns ----------------------
+      # A host-local listener (e.g. cardinal-wings on 8080) must produce a
+      # warning, not a failure: localhost clients are shadowed, but external
+      # traffic still follows the PREROUTING DNAT rule, so the mapping may be
+      # intentional. Uses an unprivileged loopback listener + --network none,
+      # so no bridge NAT is involved.
+      - name: Smoke 5 — occupied host port warns but proceeds
+        run: |
+          log="$DIAG_DIR/05-port-warn.log"
+          set -Euo pipefail
+          python3 -m http.server 18082 --bind 127.0.0.1 >"$DIAG_DIR/05-dummy-listener.log" 2>&1 &
+          dummy=$!
+          for i in $(seq 1 20); do
+            if curl -fsS --max-time 2 -o /dev/null http://127.0.0.1:18082/ 2>/dev/null; then break; fi
+            sleep 0.5
+          done
+          if ! sudo -E ./cardinal-e2e run -d -n e2e-port-w --network none -p 18082:80 alpine:latest sleep 300 >"$log" 2>&1; then
+            echo "::error::run with occupied host port 18082 failed instead of warning (see $log)"
+            cat "$log"
+            kill $dummy 2>/dev/null || true
+            exit 1
+          fi
+          if ! grep -F "already in use" "$log" >/dev/null; then
+            echo "::error::no 'already in use' warning for occupied host port 18082 (see $log)"
+            cat "$log"
+            kill $dummy 2>/dev/null || true
+            sudo -E ./cardinal-e2e rm -f e2e-port-w >>"$log" 2>&1 || true
+            exit 1
+          fi
+          kill $dummy 2>/dev/null || true
+          sudo -E ./cardinal-e2e rm -f e2e-port-w >>"$log" 2>&1 || true
+          echo "OK: occupied host port warns with actionable hint"
+          cat "$log"
+
+      # ---------------- Smoke 6: bridge forward (experimental) -----------------
+      # Full user-facing flow: run -p + curl into the container. Bridge NAT
+      # depends on the runner's iptables/namespace stack, which has been
+      # fragile before — advisory only, must not block releases.
+      - name: Smoke 6 — bridge port forward serves traffic (experimental)
+        continue-on-error: true
+        run: |
+          log="$DIAG_DIR/06-bridge-forward.log"
+          set -Euo pipefail
+          sudo -E ./cardinal-e2e run -d -n e2e-bridge -p 18083:80 alpine:latest httpd -f -p 80 -h / >"$log" 2>&1
+          ok=0
+          for i in $(seq 1 30); do
+            if curl -fsS --max-time 3 http://127.0.0.1:18083/ >>"$log" 2>&1; then ok=1; break; fi
+            sleep 1
+          done
+          sudo -E ./cardinal-e2e logs e2e-bridge >>"$log" 2>&1 || true
+          sudo -E ./cardinal-e2e rm -f e2e-bridge >>"$log" 2>&1 || true
+          if [ "$ok" != "1" ]; then
+            echo "::warning::bridge port forward did not serve traffic (see $log)"
+            cat "$log"
+            exit 1
+          fi
+          echo "OK: bridge DNAT serves container traffic"
+          cat "$log"
+
       # ---------------- Upload diag bundle --------------------------------------
       # We upload the diagnostic dir on every outcome so a future maintainer
       # can read the binary's real output without a re-run.

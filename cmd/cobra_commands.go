@@ -95,9 +95,12 @@ func register(spec commandSpec) *cobra.Command {
 			}
 			// For DisableFlagParsing commands, cobra leaves global flags
 			// (--json/--quiet/--log-level) in args. Strip them so legacy
-			// flag parsing does not see unknown flag errors.
+			// flag parsing does not see unknown flag errors. Remote flags
+			// (--host/-H/--token) are extracted into package vars on the
+			// way through so remote-capable commands can see them.
 			if c.DisableFlagParsing {
 				args = stripGlobalFlags(args)
+				args = extractRemoteFlags(args)
 			}
 			spec.run(args)
 		},
@@ -194,7 +197,7 @@ Safety:
   --encrypted-backup         Encrypt backup archives
 
 Examples:
-  cardinal run -d --ram 8g --cpu 2 -p 8080:80 --name web nginx
+  cardinal run -d --ram 8g --cpu 2 -p 8081:80 --name web nginx
   cardinal run -it --rm alpine sh
   cardinal run -d -v /data:/app -e DB_HOST=localhost myapp:latest`
 

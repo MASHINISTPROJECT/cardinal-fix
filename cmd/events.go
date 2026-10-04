@@ -3,6 +3,7 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"syscall"
 	"time"
 
+	"cardinal/internal/client"
 	"cardinal/internal/container"
 )
 
@@ -26,6 +28,11 @@ func Events(args []string) {
 		} else if ts, err := time.Parse("2006-01-02 15:04:05", *sinceStr); err == nil {
 			since = ts
 		}
+	}
+
+	if host := remoteHostResolved(); host != "" {
+		eventsRemote(host, since)
+		return
 	}
 
 	fmt.Fprintf(os.Stderr, "Listening for events... (since %s)\n", since.Format(time.RFC3339))
@@ -49,6 +56,38 @@ func Events(args []string) {
 		case <-sig:
 			fmt.Fprintf(os.Stderr, "\n")
 			return
+		}
+	}
+}
+
+// eventsRemote streams `cardinal serve` /events as JSON lines. The --since
+// filter applies client-side, same as the local branch.
+func eventsRemote(host string, since time.Time) {
+	fmt.Fprintf(os.Stderr, "Listening for events... (remote %s)\n", host)
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+	c := client.NewClient(host, remoteTokenResolved())
+	events, errs := c.StreamEvents(ctx)
+	enc := json.NewEncoder(os.Stdout)
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case err := <-errs:
+			if err != nil {
+				failf("remote %s: %v", host, err)
+			}
+			return
+		case evt, ok := <-events:
+			if !ok {
+				return
+			}
+			if !since.IsZero() && evt.Time.Before(since) {
+				continue
+			}
+			if err := enc.Encode(evt); err != nil {
+				return
+			}
 		}
 	}
 }

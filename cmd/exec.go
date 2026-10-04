@@ -3,9 +3,12 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"time"
 
+	"cardinal/internal/client"
 	"cardinal/internal/container"
 )
 
@@ -44,6 +47,11 @@ func Exec(args []string) {
 		exitFunc(1)
 	}
 
+	if host := remoteHostResolved(); host != "" {
+		execRemote(host, remaining[0], remaining[1:], interactive, tty)
+		return
+	}
+
 	c, err := container.Load(remaining[0])
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
@@ -58,5 +66,30 @@ func Exec(args []string) {
 	if err := c.ExecOpts(remaining[1:], interactive, tty); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		exitFunc(1)
+	}
+}
+
+// execRemote runs a non-interactive command through `cardinal serve`.
+// Interactive/TTY sessions need a PTY and fail loudly (as logsRemote does
+// for -f); the server 400s them as well, this check saves a round trip.
+func execRemote(host, id string, cmd []string, interactive, tty bool) {
+	if interactive || tty {
+		failf("remote %s: interactive exec (-i/-t) needs a TTY; use local `cardinal exec` or the wings terminal", host)
+		return
+	}
+	c := client.NewClient(host, remoteTokenResolved())
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	res, err := c.Exec(ctx, id, cmd)
+	if err != nil {
+		failf("remote %s: %v", host, err)
+		return
+	}
+	fmt.Print(res.Output)
+	if res.Stderr != "" {
+		fmt.Fprint(os.Stderr, res.Stderr)
+	}
+	if res.ExitCode != 0 {
+		exitFunc(res.ExitCode)
 	}
 }

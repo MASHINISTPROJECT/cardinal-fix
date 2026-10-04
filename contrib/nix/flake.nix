@@ -72,7 +72,7 @@
               blueprints, and Docker-Compose-style `up`/`down` flows.
             '';
             homepage = "https://github.com/animesao/cardinal";
-            license = licenses.mit;
+            license = licenses.asl20;
             platforms = platforms.linux;
             mainProgram = "cardinal";
             maintainers = [{
