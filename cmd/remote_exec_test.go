@@ -142,8 +142,8 @@ func TestRemoteEventsStreamsBothFrames(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/events", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/event-stream")
-		fmt.Fprint(w, "data: {\"type\":\"container\",\"actor_id\":\"aaa\",\"actor_name\":\"web\",\"status\":\"start\",\"time\":\"2026-01-02T15:04:06Z\"}\n\n")
-		fmt.Fprint(w, "data: {\"type\":\"container\",\"actor_id\":\"bbb\",\"actor_name\":\"db\",\"status\":\"die\",\"time\":\"2026-01-02T15:04:07Z\"}\n\n")
+		_, _ = fmt.Fprint(w, "data: {\"type\":\"container\",\"actor_id\":\"aaa\",\"actor_name\":\"web\",\"status\":\"start\",\"time\":\"2026-01-02T15:04:06Z\"}\n\n")
+		_, _ = fmt.Fprint(w, "data: {\"type\":\"container\",\"actor_id\":\"bbb\",\"actor_name\":\"db\",\"status\":\"die\",\"time\":\"2026-01-02T15:04:07Z\"}\n\n")
 	})
 	srv := httptest.NewServer(mux)
 	defer srv.Close()
@@ -281,9 +281,9 @@ func TestRemoteLogsFollowStreamsBothChunks(t *testing.T) {
 			http.Error(w, "streaming unsupported", http.StatusInternalServerError)
 			return
 		}
-		fmt.Fprint(w, "chunk1\n")
+		_, _ = fmt.Fprint(w, "chunk1\n")
 		fl.Flush()
-		fmt.Fprint(w, "chunk2\n")
+		_, _ = fmt.Fprint(w, "chunk2\n")
 		fl.Flush()
 	})
 	srv := httptest.NewServer(mux)

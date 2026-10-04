@@ -3,17 +3,60 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	"cardinal/internal/container"
 	"cardinal/internal/state"
 )
+
+// syncRecorder is a goroutine-safe http.ResponseWriter for tests that read
+// the body while the handler is still writing. httptest.ResponseRecorder
+// is not safe for concurrent Write + Body access under -race.
+type syncRecorder struct {
+	mu      sync.Mutex
+	header  http.Header
+	body    bytes.Buffer
+	code    int
+	flushed bool
+}
+
+func newSyncRecorder() *syncRecorder {
+	return &syncRecorder{header: make(http.Header)}
+}
+
+func (s *syncRecorder) Header() http.Header { return s.header }
+
+func (s *syncRecorder) Write(b []byte) (int, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.body.Write(b)
+}
+
+func (s *syncRecorder) WriteHeader(code int) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.code = code
+}
+
+func (s *syncRecorder) Flush() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.flushed = true
+}
+
+func (s *syncRecorder) snapshot() string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.body.String()
+}
 
 func TestHandleContainerExec(t *testing.T) {
 	c := &container.Container{ID: "abc", Name: "web"}
@@ -55,7 +98,7 @@ func TestHandleEventsSSE(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	req := httptest.NewRequest(http.MethodGet, "/events", nil).WithContext(ctx)
-	rec := httptest.NewRecorder()
+	rec := newSyncRecorder()
 
 	done := make(chan struct{})
 	go func() {
@@ -67,13 +110,13 @@ func TestHandleEventsSSE(t *testing.T) {
 	for {
 		container.EmitEvent(container.EventStart, &container.Container{ID: "a", Name: "w"})
 		time.Sleep(50 * time.Millisecond)
-		if body := rec.Body.String(); strings.Contains(body, "data:") && strings.Contains(body, `"type"`) {
+		if body := rec.snapshot(); strings.Contains(body, "data:") && strings.Contains(body, `"type"`) {
 			break
 		}
 		if time.Now().After(deadline) {
 			cancel()
 			<-done
-			t.Fatalf("timed out waiting for SSE frame, body %q", rec.Body.String())
+			t.Fatalf("timed out waiting for SSE frame, body %q", rec.snapshot())
 		}
 	}
 
@@ -84,7 +127,7 @@ func TestHandleEventsSSE(t *testing.T) {
 		t.Fatalf("handleEvents did not return after context cancel")
 	}
 
-	body := rec.Body.String()
+	body := rec.snapshot()
 	if !strings.Contains(body, "data:") {
 		t.Fatalf("body %q does not contain data:", body)
 	}
@@ -108,7 +151,7 @@ func TestHandleContainerLogsFollow(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	req := httptest.NewRequest(http.MethodGet, "/containers/w/logs?follow=1", nil).WithContext(ctx)
-	rec := httptest.NewRecorder()
+	rec := newSyncRecorder()
 
 	done := make(chan struct{})
 	go func() {
@@ -139,7 +182,7 @@ func TestHandleContainerLogsFollow(t *testing.T) {
 		t.Fatalf("handleContainerLogs did not return after context cancel")
 	}
 
-	body := rec.Body.String()
+	body := rec.snapshot()
 	if !strings.Contains(body, "chunk1") {
 		t.Fatalf("body %q does not contain chunk1", body)
 	}
