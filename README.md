@@ -9,7 +9,7 @@
 
 <p align="center">
   <!-- cardinal-version-badge:start -->
-  <img src="https://img.shields.io/badge/version-v2.3.0-blue?style=flat-square">
+  <img src="https://img.shields.io/badge/version-v2.3.1-blue?style=flat-square">
   <!-- cardinal-version-badge:end -->
   <img src="https://img.shields.io/badge/go-1.26%2B-00ADD8?style=flat-square&logo=go">
   <img src="https://img.shields.io/badge/license-Apache--2.0-green?style=flat-square">
@@ -984,8 +984,10 @@ Limits:
 ## Changelog
 
 <!-- cardinal-release:start -->
-**v2.3.0** — Remote mode expansion: `exec` (captured output), `stats`, `top`, `inspect`, `events` (SSE), `start`/`stop`/`restart` and streaming `logs -f` via `cardinal --host URL [--token]`; host-port conflict warnings in `run`/`port add`.
+**v2.3.1** — Green build: test-harness fixes only (errcheck-clean stubs, race-free SSE/logs-follow tests). No runtime changes since v2.3.0.
 <!-- cardinal-release:end -->
+
+**v2.3.0** — Remote mode expansion: `exec` (captured output), `stats`, `top`, `inspect`, `events` (SSE), `start`/`stop`/`restart` and streaming `logs -f` via `cardinal --host URL [--token]`; host-port conflict warnings in `run`/`port add`.
 
 **v2.2.0** — Read-only remote mode: `cardinal --host URL [--token]` queries a remote `cardinal serve` for `ps`, `info` and `logs --tail` (new `internal/client`, `CARDINAL_REMOTE_HOST`/`CARDINAL_TOKEN` env).
 

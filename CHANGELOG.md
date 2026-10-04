@@ -3,6 +3,13 @@
 **Project release:** `v2.2.0`
 <!-- cardinal-version:end -->
 
+## 2.3.1 (2026-10-04)
+
+### Green build (no runtime changes)
+
+- Fix `errcheck` failures in `cmd/remote_exec_test.go` (unchecked `fmt.Fprint` in the SSE/logs stub handlers).
+- Fix `go test -race` data race in `TestHandleEventsSSE`/`TestHandleContainerLogsFollow`: both tests now read the streaming body through a mutex-guarded recorder instead of racing the handler goroutine on `httptest.ResponseRecorder.Body`.
+
 ## 2.3.0 (2026-10-04)
 
 ### Remote mode expansion + host-port conflict UX
@@ -269,7 +276,7 @@
 - Accept canonical and compatibility JSON field names for startup scripts.
 
 <!-- cardinal-current-release:start -->
-> Current release: **v2.3.0**. Detailed release notes below are maintained manually.
+> Current release: **v2.3.1**. Detailed release notes below are maintained manually.
 <!-- cardinal-current-release:end -->
 
 ## 1.25.3 (2026-08-17)

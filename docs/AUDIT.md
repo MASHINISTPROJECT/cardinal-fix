@@ -1,6 +1,6 @@
 <!-- cardinal-version:start -->
-**Documentation version:** `2.3.0`
-**Project release:** `v2.3.0`
+**Documentation version:** `2.3.1`
+**Project release:** `v2.3.1`
 <!-- cardinal-version:end -->
 
 # cardinal — Continuous audit
