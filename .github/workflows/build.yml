@@ -60,7 +60,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.26.6"
+          go-version: "1.26.9"
           cache: true
 
       - name: golangci-lint
@@ -108,7 +108,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.26.6"
+          go-version: "1.26.9"
           cache: true
 
       # We split `./...` into per-package invocations so a failing
@@ -190,7 +190,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.26.6"
+          go-version: "1.26.9"
           cache: true
 
       - name: Reproducible cross-compile
